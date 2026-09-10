@@ -1,1 +1,27 @@
-<h2>{{ name() }}</h2>
+
+<section id = "tasks">
+    @if(name() == '') {
+        <p> Please select person! </p>
+    } 
+    @else {
+    <header>
+        <h2>{{ name() }}'s Tasks </h2>
+        <menu>
+            <button (click) = "addTask()">Add Task</button>
+        </menu>
+   </header>
+   <ul>
+    <li>
+        <app-task></app-task>
+    </li>
+    <li>
+        <app-task></app-task>
+    </li>
+    <li>
+        <app-task></app-task>
+    </li>
+   </ul>
+}
+</section>
+
+

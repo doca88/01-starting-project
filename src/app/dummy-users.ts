@@ -18,5 +18,10 @@ export const DUMMY_USERS = [
     id: 'u4',
     name: 'Aleksandar Todorovic',
     avatar: 'user-4.jpg',
+  },
+  {
+    id: 'u5',
+    name: 'Home',
+    avatar: 'user-6.jpg',
   }
 ];

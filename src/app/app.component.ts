@@ -15,7 +15,7 @@ import { TasksComponent } from './tasks/tasks.component';
 export class AppComponent {
 
   selectedUserName = signal<string>('');
-  users=DUMMY_USERS;
+  users = DUMMY_USERS;
   onSelectUser(userId: string) 
   {
 
