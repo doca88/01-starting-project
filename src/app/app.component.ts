@@ -20,5 +20,7 @@ export class AppComponent {
   {
 
     this.selectedUserName.set(DUMMY_USERS.find(x => x.id === userId)?.name || '');
+    
   }
+
 }

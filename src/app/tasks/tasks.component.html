@@ -1,4 +1,8 @@
 
+@if(isAddingTask()) {
+    <app-new-task (canceled)="cancelTask()"></app-new-task>
+}
+
 <section id = "tasks">
     @if(name() == '') {
         <p> Please select person! </p>
@@ -11,17 +15,14 @@
         </menu>
    </header>
    <ul>
-    <li>
-        <app-task></app-task>
-    </li>
-    <li>
-        <app-task></app-task>
-    </li>
-    <li>
-        <app-task></app-task>
-    </li>
-   </ul>
-}
+    @for (task of selectedTasks(); track $index) {
+        <li>
+            <app-task [task]="task" (completed)="onCompleteTask($event )"></app-task>
+        </li>
+    }
+    </ul>
+    }
+
 </section>
 
 

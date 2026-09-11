@@ -1,17 +1,6 @@
-import { Component, signal, computed, Input, input, Output, EventEmitter, output } from '@angular/core';
+import { Component, signal, computed, Input, input, Output, EventEmitter, output, effect } from '@angular/core';
 //import {DUMMY_USERS} from '../dummy-users';
-
-// type User = {
-//   id: string;
-//   avatar: string;
-//   name: string;
-// };
-
-interface User {
-  id: string;
-  avatar: string;
-  name: string;
-};
+import { type User } from "../common/utilities";
 
 @Component({
   selector: 'app-user',
@@ -23,12 +12,7 @@ interface User {
 export class UserComponent {
 
     path = computed(() => '/assets/' + this.user()?.avatar);
-    //@Input({required: true}) avatar!: string; 
-    //@Input({required: true}) name!: string;
-
-    // id = input<string>('');
-    // avatar = input<string>('');
-    // name = input<string>('');
+    selected = input<boolean>(false);
     user = input<User>();
     //path = computed(() => '/assets/' + this.user()?.avatar);
     output = output<string>();  
@@ -38,6 +22,14 @@ export class UserComponent {
   //randomIndex = Math.floor(Math.random() * DUMMY_USERS.length);
   //selectedUser = signal(DUMMY_USERS[this.randomIndex]);
 
+  constructor() {
+    effect(() => {
+        console.log('selected promenjen:', this.selected());
+    });
+
+    let a: number = 5;
+    a + 5;
+}
   //path = computed(() => '/assets/' + this.selectedUser().avatar);
 
   // get path() {
