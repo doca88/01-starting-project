@@ -3,7 +3,7 @@ export interface Task {
     userId: string;
     text: string;
     summary: string;
-    dueDate: Date;
+    dueDate: string;
 }
 
 export interface User {
@@ -11,3 +11,9 @@ export interface User {
   avatar: string;
   name: string;
 };
+
+export interface SubmissionType {
+    enteredTitle : string;
+    enteredSummary : string;
+    enteredDate : string;
+}
