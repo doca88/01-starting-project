@@ -1,6 +1,7 @@
-import {Component, input, computed, signal, output} from '@angular/core'
+import {Component, input, computed, signal, inject, output} from '@angular/core'
 import { type Task, SubmissionType } from "../../common/utilities";
 import { FormsModule } from '@angular/forms'
+import {TaskService} from '../tasks.service';
 
 @Component({
   selector: 'app-new-task',
@@ -11,21 +12,22 @@ import { FormsModule } from '@angular/forms'
 })
 export class NewTaskComponent {
 
-    add = output<SubmissionType>();
-    canceled = output<boolean>();
+    closed = output<boolean>();
     enteredTitle = signal<string>("");
     enteredSummary = signal<string>("");
     enteredDate = signal<string>("");
+    taskService = inject(TaskService);
+    userId = input<string>("");
 
-    cancel()
+    close()
     {
-       this.canceled.emit(true);
+       this.closed.emit(true);
     }
 
     onSubmitted()
     {
-       let object = this.CreateSubitionType();
-       this.add.emit(object);
+      this.taskService.addTask(this.CreateSubitionType(), this.userId());
+      this.close();
     }
 
     CreateSubitionType() : SubmissionType

@@ -1,11 +1,12 @@
 import { Component, signal, computed, Input, input, Output, EventEmitter, output, effect } from '@angular/core';
 //import {DUMMY_USERS} from '../dummy-users';
 import { type User } from "../common/utilities";
+import { CardComponent } from '../shared/card/card.component';
 
 @Component({
   selector: 'app-user',
   standalone: true,
-  imports: [],
+  imports: [CardComponent],
   templateUrl: './user.component.html',
   styleUrl: './user.component.css'
 })
