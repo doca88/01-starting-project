@@ -12,25 +12,25 @@ import { CardComponent } from '../shared/card/card.component';
 })
 export class UserComponent {
 
-    path = computed(() => '/assets/' + this.user()?.avatar);
-    selected = input<boolean>(false);
-    user = input<User>();
-    //path = computed(() => '/assets/' + this.user()?.avatar);
-    output = output<string>();  
+  path = computed(() => '/assets/' + this.user()?.avatar);
+  selected = input<boolean>(false);
+  user = input<User>();
+  //path = computed(() => '/assets/' + this.user()?.avatar);
+  output = output<string>();
 
-    selectUserEvent = output<string>();
+  selectUserEvent = output<string>();
   //@Output() select = new EventEmitter();
   //randomIndex = Math.floor(Math.random() * DUMMY_USERS.length);
   //selectedUser = signal(DUMMY_USERS[this.randomIndex]);
 
   constructor() {
     effect(() => {
-        console.log('selected promenjen:', this.selected());
+      console.log('selected promenjen:', this.selected());
     });
 
     let a: number = 5;
     a + 5;
-}
+  }
   //path = computed(() => '/assets/' + this.selectedUser().avatar);
 
   // get path() {
@@ -41,10 +41,10 @@ export class UserComponent {
   //   return '/assets/' + this.avatar();
   // }
   onSelectedUser() {
-    
-  this.selectUserEvent.emit(this.user()?.id || '');
-  this.output.emit(this.user()?.name || '');
-  
+
+    this.selectUserEvent.emit(this.user()?.id || '');
+    this.output.emit(this.user()?.name || '');
+
     //console.log('Selected user:', this.selectedUser);
     //const randomIndex1 = Math.floor(Math.random() * DUMMY_USERS.length);
     //this.selectedUser.set(DUMMY_USERS[randomIndex1]);

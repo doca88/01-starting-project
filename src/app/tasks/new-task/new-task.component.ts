@@ -1,7 +1,8 @@
-import {Component, input, computed, signal, inject, output} from '@angular/core'
+import { Component, input, computed, signal, inject, output } from '@angular/core'
 import { type Task, SubmissionType } from "../../common/utilities";
 import { FormsModule } from '@angular/forms'
-import {TaskService} from '../tasks.service';
+import { TaskService } from '../tasks.service';
+
 
 @Component({
   selector: 'app-new-task',
@@ -12,31 +13,27 @@ import {TaskService} from '../tasks.service';
 })
 export class NewTaskComponent {
 
-    closed = output<boolean>();
-    enteredTitle = signal<string>("");
-    enteredSummary = signal<string>("");
-    enteredDate = signal<string>("");
-    taskService = inject(TaskService);
-    userId = input<string>("");
+  closed = output<boolean>();
+  enteredTitle = signal<string>("");
+  enteredSummary = signal<string>("");
+  enteredDate = signal<string>("");
+  taskService = inject(TaskService);
+  userId = input<string>("");
 
-    close()
-    {
-       this.closed.emit(true);
-    }
+  close() {
+    this.closed.emit(true);
+  }
 
-    onSubmitted()
-    {
-      this.taskService.addTask(this.CreateSubitionType(), this.userId());
-      this.close();
-    }
+  onSubmitted() {
+    this.taskService.addTask(this.CreateSubitionType(), this.userId());
+    this.close();
+  }
 
-    CreateSubitionType() : SubmissionType
-    {
-        return {
-          enteredDate : this.enteredDate(),
-          enteredTitle : this.enteredTitle(), 
-          enteredSummary : this.enteredSummary()
-        }
-      }
+  CreateSubitionType(): SubmissionType {
+    return {
+      enteredDate: this.enteredDate(),
+      enteredTitle: this.enteredTitle(),
+      enteredSummary: this.enteredSummary()
     }
-  
+  }
+}
