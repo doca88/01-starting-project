@@ -1,0 +1,23 @@
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.85rem;
+}
+.grid li {
+  display: grid;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+.grid li:last-child { border-bottom: none; }
+.grid span {
+  padding: 0.35rem 0.6rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+.grid span:last-child { border-right: none; }
+.header { font-weight: bold; background: rgba(255, 255, 255, 0.08); }
+.grid li:not(.header):hover { background: rgba(255, 255, 255, 0.05); }
+.error { color: #ff6b7a; }
