@@ -1,23 +1,65 @@
+:host {
+  display: block;
+}
+
+main {
+  width: 95%;
+  max-width: 72rem;
+  margin: 2rem auto;
+  overflow-x: auto;
+}
+
 .grid {
   list-style: none;
   margin: 0;
   padding: 0;
+  width: fit-content;
   border: 1px solid rgba(255, 255, 255, 0.15);
   font-size: 0.85rem;
 }
+
 .grid li {
   display: grid;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  grid-template-columns:
+    60px    /* ID */
+    120px   /* Trade date */
+    110px   /* Quantity */
+    60px    /* SID */
+    200px   /* Manager */
+    200px   /* Strategy */
+    140px;  /* Allocations */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
-.grid li:last-child { border-bottom: none; }
+
+.grid li:last-child {
+  border-bottom: none;
+}
+
 .grid span {
-  padding: 0.35rem 0.6rem;
+  padding: 0.4rem 0.6rem;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
-.grid span:last-child { border-right: none; }
-.header { font-weight: bold; background: rgba(255, 255, 255, 0.08); }
-.grid li:not(.header):hover { background: rgba(255, 255, 255, 0.05); }
-.error { color: #ff6b7a; }
+
+.grid span:last-child {
+  border-right: none;
+}
+
+.header {
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.grid li:not(.header):hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.num {
+  text-align: right;
+}
+
+.error {
+  color: #ff6b7a;
+}

@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-
-export type Order = Record<string, unknown>;
+import { Order } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class OrdersService {

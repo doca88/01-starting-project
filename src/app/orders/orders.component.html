@@ -6,17 +6,25 @@
   }
 
   <ul class="grid">
-    <li class="header" [style.grid-template-columns]="gridColumns()">
-      @for (col of columns(); track col) {
-        <span>{{ col }}</span>
-      }
+    <li class="header">
+      <span>ID</span>
+      <span>Trade date</span>
+      <span class="num">Quantity</span>
+      <span>SID</span>
+      <span>Manager</span>
+      <span>Strategy</span>
+      <span class="num">Allocation Count</span>
     </li>
 
-    @for (order of orders(); track order['orderId']) {
-      <li [style.grid-template-columns]="gridColumns()">
-        @for (col of columns(); track col) {
-          <span>{{ cell(order[col]) }}</span>
-        }
+    @for (order of orders(); track order.orderId) {
+      <li>
+        <span>{{ order.orderId }}</span>
+        <span>{{ order.tradeDate | date: 'dd-MMM-yyyy' }}</span>
+        <span class="num">{{ order.quantity | number: '1.2-2' }}</span>
+        <span>{{ order.sid }}</span>
+        <span>{{ order.manager.display }}</span>
+        <span>{{ order.strategy.display }}</span>
+        <span class="num">{{ order.allocations.length }}</span>
       </li>
     }
   </ul>
