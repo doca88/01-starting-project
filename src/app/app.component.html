@@ -1,13 +1,5 @@
-<app-header />
+
 
 <main>
-
-  <ul id="users">
-    @for (user of users; track $index) {
-    <li>
-      <app-user [user]="user" (selectUserEvent)="onSelectUser($event )" />
-    </li>
-    }
-  </ul>
-  <app-tasks [name]="selectedUserName()"></app-tasks>
+ <p>Orders</p>
 </main>
