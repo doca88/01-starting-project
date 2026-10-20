@@ -1,15 +1,73 @@
-* {
-  box-sizing: border-box;
-}
-html {
-  height: 100%;
+body {
+  margin: 0;
+  background: #1e1e1e;
+  font-family: 'Segoe UI', Arial, sans-serif;
 }
 
-body {
-  font-family: "Poppins", sans-serif;
-  background: radial-gradient(circle at top left, #181023, #0b0519);
-  color: #e6e5e8;
-  margin: 0;
-  padding: 0;
-  height: 100%;
+/* izgled svih AG Grid-ova u aplikaciji */
+ag-grid-angular {
+  display: block;
+
+  /* tamni scrollbar */
+  --ag-browser-color-scheme: dark;
+  scrollbar-color: #555 #262626;   /* klizač, pozadina */
+
+  --ag-background-color: #262626;
+  --ag-foreground-color: #e0e0e0;
+  --ag-accent-color: #8a8a8a;
+  --ag-border-color: #3c3c3c;
+  --ag-header-background-color: #111;
+  --ag-header-text-color: #fff;
+  --ag-header-font-weight: 700;
+  --ag-font-family: 'Segoe UI', Arial, sans-serif;
+  --ag-font-size: 12px;
+  --ag-row-height: 27px;
+  --ag-header-height: 30px;
+  --ag-spacing: 5px;
+  --ag-wrapper-border-radius: 0;
+  --ag-column-border: solid 1px #3c3c3c;
+  --ag-selected-row-background-color: #4a4a4a;
+}
+
+/* naslovi panela */
+.title {
+  color: #e0e0e0;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 2px;
+}
+
+.muted {
+  color: #9a9a9a;
+  font-weight: 400;
+  margin-left: 6px;
+}
+
+/* dugmad */
+.btn {
+  min-width: 80px;
+  padding: 5px 14px;
+  background: #d8364a;
+  color: #fff;
+  border: 1px solid #d8364a;
+  border-radius: 3px;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.btn:hover:not(:disabled) {
+  background: #e5485c;
+  box-shadow: 0 0 8px rgba(216, 54, 74, 0.5);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+/* Total red na dnu grida */
+.ag-row-footer {
+  font-weight: 700;
+  background: #1a1a1a;
 }

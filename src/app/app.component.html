@@ -1,2 +1,19 @@
+<div class="content">
+  <app-orders
+    #orders
+    class="orders"
+    (orderSelected)="selectedOrder.set($event)" />
 
-    <app-orders/>
+  <app-allocations
+    class="allocations"
+    [orderId]="selectedOrder()?.orderId ?? null"
+    [allocations]="selectedOrder()?.allocations ?? []" />
+
+  @if (orders.loading()) {
+    <app-loading text="Loading orders" />
+  }
+</div>
+
+<div class="footer">
+  <button class="btn" (click)="orders.search()" [disabled]="orders.loading()">Search</button>
+</div>

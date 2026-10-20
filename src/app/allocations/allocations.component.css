@@ -1,0 +1,10 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.grid {
+  flex: 1;
+  min-height: 0;
+}

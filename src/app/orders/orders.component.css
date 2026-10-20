@@ -1,65 +1,17 @@
 :host {
-  display: block;
-}
-
-main {
-  width: 95%;
-  max-width: 72rem;
-  margin: 2rem auto;
-  overflow-x: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .grid {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  width: fit-content;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  font-size: 0.85rem;
-}
-
-.grid li {
-  display: grid;
-  grid-template-columns:
-    60px    /* ID */
-    120px   /* Trade date */
-    110px   /* Quantity */
-    60px    /* SID */
-    200px   /* Manager */
-    200px   /* Strategy */
-    140px;  /* Allocations */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.grid li:last-child {
-  border-bottom: none;
-}
-
-.grid span {
-  padding: 0.4rem 0.6rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.grid span:last-child {
-  border-right: none;
-}
-
-.header {
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.grid li:not(.header):hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.num {
-  text-align: right;
+  flex: 1;
+  min-height: 0;
 }
 
 .error {
-  color: #ff6b7a;
+  padding: 6px 10px;
+  background: #3a1c20;
+  color: #ff8a95;
+  font-size: 12px;
 }

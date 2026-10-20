@@ -1,0 +1,58 @@
+/* overlay preko roditelja (roditelj mora imati position: relative) */
+:host {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(30, 30, 30, 0.85);
+  backdrop-filter: blur(2px);
+}
+
+/* tanka traka koja klizi po vrhu */
+.bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  overflow: hidden;
+  background: #3c3c3c;
+}
+
+.bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, #d8364a, transparent);
+  animation: slide 1.2s ease-in-out infinite;
+}
+
+/* svetleći prsten */
+.spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: conic-gradient(transparent 0 20%, #d8364a);
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+  filter: drop-shadow(0 0 8px rgba(216, 54, 74, 0.7));
+  animation: spin 0.9s linear infinite;
+}
+
+.text {
+  color: #cfcfcf;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes spin  { to { transform: rotate(360deg); } }
+@keyframes slide { from { left: -40%; } to { left: 100%; } }
+@keyframes pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }

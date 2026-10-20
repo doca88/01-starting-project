@@ -1,31 +1,21 @@
-<main>
-  <p>Orders ({{ orders().length }})</p>
+@if (error()) {
+  <div class="error">{{ error() }}</div>
+}
 
-  @if (error()) {
-    <p class="error">Greška: {{ error() }}</p>
-  }
+<div class="title">Orders</div>
 
-  <ul class="grid">
-    <li class="header">
-      <span>ID</span>
-      <span>Trade date</span>
-      <span class="num">Quantity</span>
-      <span>SID</span>
-      <span>Manager</span>
-      <span>Strategy</span>
-      <span class="num">Allocation Count</span>
-    </li>
-
-    @for (order of orders(); track order.orderId) {
-      <li>
-        <span>{{ order.orderId }}</span>
-        <span>{{ order.tradeDate | date: 'dd-MMM-yyyy' }}</span>
-        <span class="num">{{ order.quantity | number: '1.2-2' }}</span>
-        <span>{{ order.sid }}</span>
-        <span>{{ order.manager.display }}</span>
-        <span>{{ order.strategy.display }}</span>
-        <span class="num">{{ order.allocations.length }}</span>
-      </li>
-    }
-  </ul>
-</main>
+<ag-grid-angular
+  class="grid"
+  [rowData]="orders()"
+  [columnDefs]="columns"
+  [defaultColDef]="defaultColDef"
+  [rowSelection]="rowSelection"
+  (selectionChanged)="onSelectionChanged($event)"
+  rowGroupPanelShow="always"
+  [suppressAggFuncInHeader]="true"
+  [getContextMenuItems]="getContextMenuItems"
+  [statusBar]="statusBar"
+  [cellSelection]="true"
+  grandTotalRow="bottom"
+  (columnRowGroupChanged)="$event.api.refreshCells({ force: true })"
+  [autoSizeStrategy]="{ type: 'fitCellContents' }" />
