@@ -1,23 +1,11 @@
-import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { LookupCache } from '../common/lookup-cache';
+import { Order, Security } from '../common/models';
+import { OrdersService } from '../common/orders.service';
 import { injectViewModel } from '../common/window/window.service';
 import { WindowFrameComponent } from '../common/window/window-frame.component';
-import { OrderDraft, OrderViewModel } from './order.view-model';
-
-/** Stavka za combo/lookup (security). */
-export interface LookupItem {
-  id: number;
-  name: string;
-}
-
-type OrderTab = 'order' | 'allocations';
-type FieldName = 'sid' | 'tradeDate' | 'quantity' | 'managerId' | 'strategyId';
-
-const positive: ValidatorFn = c => (Number(c.value) > 0 ? null : { positive: true });
-const selected: ValidatorFn = c => (Number(c.value) > 0 ? null : { required: true });
-
-let nextId = 0;
+import { OrderViewModel } from './order.view-model';
 
 @Component({
   selector: 'app-order-form',
@@ -28,107 +16,152 @@ let nextId = 0;
 })
 export class OrderComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly lookups = inject(LookupCache);
-
-  /** ViewModel prozora (title, subtitle, close, book); protected da ga vidi template. */
+  private readonly orders = inject(OrdersService);
   protected readonly vm = injectViewModel<OrderViewModel>();
+  protected readonly lookups = inject(LookupCache);
 
-  /** Nalog iz VM-a; null = novi nalog */
-  readonly order = signal(this.vm.order).asReadonly();
-  securities = input<LookupItem[]>([]);
+  /** Aktivni tab */
+  readonly tab = signal<'order' | 'allocations'>('order');
 
-  readonly managers = this.lookups.managers;
-  readonly strategies = this.lookups.strategies;
+  /** Alokacije trenutnog naloga; osvežavaju se same posle snimanja */
+  readonly allocations = computed(() => this.vm.order()?.allocations ?? []);
 
-  // Napomena: u dialogu ovi output-i nemaju slušaoca.
-  securityOpened = output<number>();
-  newAllocation = output<void>();
+  /** true dok traje snimanje - Book je tada onemogućen (nema duplog snimanja) */
+  readonly saving = signal(false);
 
-  /** Jedinstven prefiks za id-jeve, jer više prozora može biti otvoreno istovremeno. */
-  readonly uid = `order-form-${nextId++}`;
+  /** true kad je korisnik kliknuo Edit na postojećem nalogu */
+  readonly editing = signal(false);
 
-  activeTab = signal<OrderTab>('order');
-  securityText = signal('');
+  /** polja se mogu menjati: novi nalog ili Edit režim; inače je forma readonly */
+  readonly editable = computed(() => this.vm.isNew || this.editing());
 
-  allocations = computed(() => this.order()?.allocations ?? []);
-
-  form = this.fb.nonNullable.group({
-    sid: [0, selected],
-    tradeDate: [todayIso(), Validators.required], // yyyy-MM-dd za <input type="date">
-    quantity: [null as number | null, positive],
-    managerId: [0, selected],
-    strategyId: [0, selected],
+  /** Polja forme, popunjena iz naloga (ili prazna za novi) */
+  readonly form = this.fb.nonNullable.group({
+    sid: this.vm.order()?.sid ?? 0,
+    tradeDate: (this.vm.order()?.tradeDate ?? new Date().toLocaleDateString('sv-SE')).substring(0, 10), // yyyy-MM-dd
+    quantity: this.vm.order()?.quantity ?? 0,
+    managerId: this.vm.order()?.managerId ?? 0,
+    strategyId: this.vm.order()?.strategyId ?? 0,
   });
 
   constructor() {
-    // Učitavanje postojećeg naloga u formu
+    // Polja otključana za novi nalog i u Edit režimu; inače zaključana (readonly)
     effect(() => {
-      const o = this.order();
-      if (!o) return;
-      this.form.reset({
-        sid: o.sid,
-        tradeDate: o.tradeDate.substring(0, 10),
-        quantity: o.quantity,
-        managerId: o.managerId,
-        strategyId: o.strategyId,
-      });
-    });
-
-    // Prikaz naziva hartije kad stignu i nalog i lista hartija
-    effect(() => {
-      const sid = this.order()?.sid;
-      const name = this.securities().find(s => s.id === sid)?.name;
-      if (name) this.securityText.set(name);
+      if (this.editable()) this.form.enable();
+      else this.form.disable();
     });
   }
 
-  onSecurityInput(text: string): void {
+  // ----- Security: padajuća lista koja pretražuje po sid-u, a u polje upisuje description -----
+
+  /** tekst koji se vidi u polju (posle izbora: description) */
+  readonly securityText = signal(this.vm.order()?.security?.description ?? '');
+
+  /** ono što je korisnik otkucao; po tome se filtrira lista */
+  readonly securityQuery = signal('');
+
+  /** da li je padajuća lista otvorena */
+  readonly securityOpen = signal(false);
+
+  /** hartije čiji sid počinje otkucanim tekstom (prvih 20) */
+  readonly securityMatches = computed(() => {
+    const q = this.securityQuery().trim();
+    return this.lookups.securities()
+      .filter((s) => String(s.sid).startsWith(q))
+      .slice(0, 20);
+  });
+
+  /** kucanje: filtriraj listu i poništi prethodni izbor */
+  searchSecurity(text: string) {
     this.securityText.set(text);
-    const match = this.securities().find(s => s.name === text);
-    this.form.controls.sid.setValue(match?.id ?? 0);
-    this.form.controls.sid.markAsTouched();
+    this.securityQuery.set(text);
+    this.form.controls.sid.setValue(0);
+    this.securityOpen.set(true);
   }
 
-  openSecurity(): void {
-    const sid = this.form.controls.sid.value;
-    if (sid > 0) this.securityOpened.emit(sid);
+  /** izbor iz liste: sid u formu, description u polje */
+  pickSecurity(s: Security) {
+    this.securityText.set(s.description);
+    this.securityQuery.set('');
+    this.form.controls.sid.setValue(s.sid);
+    this.securityOpen.set(false);
   }
 
-  isInvalid(name: FieldName): boolean {
-    const c = this.form.controls[name];
-    return c.invalid && c.touched;
+  /** Enter u polju: izaberi prvu hartiju iz liste (i ne šalji formu) */
+  pickFirstSecurity(e: Event) {
+    e.preventDefault();
+    const first = this.securityMatches()[0];
+    if (first) this.pickSecurity(first);
   }
 
-  /** Zatvara prozor bez rezultata; show() vraća undefined. */
-  close(): void {
-    this.vm.close();
-  }
-
-  /** Validira i predaje draft VM-u, koji snima i zatvara prozor sa Order-om. */
-  book(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      this.activeTab.set('order');
-      return;
+  /** Esc: zatvori listu; ako je već zatvorena, Esc zatvara prozor kao i inače */
+  closeSecurityList(e: Event) {
+    if (this.securityOpen()) {
+      e.stopPropagation();
+      this.securityOpen.set(false);
     }
+  }
+
+  // ----- Dugmad -----
+
+  /** Edit: otključaj polja postojećeg naloga */
+  edit() {
+    this.editing.set(true);
+  }
+
+  /** Refresh: ponovo učitaj nalog sa servera; nesnimljene izmene se odbacuju */
+  refresh() {
+    const id = this.vm.order()?.orderId;
+    if (!id) return;
+
+    this.orders.get(id).subscribe({
+      next: (o: Order) => {
+        this.vm.order.set(o);
+        this.form.setValue({
+          sid: o.sid,
+          tradeDate: o.tradeDate.substring(0, 10),
+          quantity: o.quantity,
+          managerId: o.managerId,
+          strategyId: o.strategyId,
+        });
+        this.securityText.set(o.security?.description ?? '');
+        this.editing.set(false);   // nazad u readonly
+      },
+      error: (e: unknown) => console.error('order refresh failed', e),
+    });
+  }
+
+  /** Zatvara prozor; pozivalac dobija poslednji snimljeni nalog (da osveži grid) */
+  close() {
+    this.vm.close(this.vm.order() ?? undefined);
+  }
+
+  /**
+   * Snimi nalog i ostavi prozor otvoren: novi -> POST, Edit režim -> PUT.
+   * Posle snimanja forma je ponovo readonly, a Book onemogućen do sledećeg Edit-a.
+   */
+  book() {
+    if (this.saving() || !this.editable()) return;   // i Enter u formi ne sme da snimi readonly nalog
 
     const v = this.form.getRawValue();
-    const draft: OrderDraft = {
-      orderId: this.order()?.orderId ?? 0,
-      sid: v.sid,
-      tradeDate: `${v.tradeDate}T00:00:00`,
-      quantity: v.quantity ?? 0,
-      managerId: v.managerId,
-      strategyId: v.strategyId,
-    };
+    this.saving.set(true);
 
-    this.vm.book(draft);
+    this.orders
+      .save({
+        ...v,
+        orderId: this.vm.order()?.orderId ?? 0,
+        tradeDate: `${v.tradeDate}T00:00:00`,
+      })
+      .subscribe({
+        next: (saved: Order) => {
+          this.vm.order.set(saved);   // naslov prozora prelazi na "Order <id>"
+          this.editing.set(false);    // nazad u readonly
+          this.saving.set(false);
+        },
+        error: (e: unknown) => {
+          console.error('order save failed', e);
+          this.saving.set(false);
+        },
+      });
   }
-}
-
-/** Današnji datum kao yyyy-MM-dd, u lokalnoj zoni (toISOString bi dao UTC). */
-function todayIso(): string {
-  const d = new Date();
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }

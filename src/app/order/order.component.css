@@ -1,51 +1,25 @@
+/* ===== Cela forma: pozadina, font, boja teksta ===== */
+/* color-scheme: dark daje tamni izgled ugrađenim kontrolama (date picker, padajuća lista) */
 :host {
-  --of-accent: #d8364a;
-  --of-accent-hover: #c42e41;
-  --of-bg: #262626;
-  --of-border: #3a3a3a;
-  --of-box-border: #4a4a4a;
-  --of-input-bg: #333333;
-  --of-input-border: #4a4a4a;
-  --of-text: #e6e6e6;
-  --of-label: #c8c8c8;
-  --of-muted: #9a9a9a;
-  --of-focus: #6aa0ff;
-  --of-error: #e5534b;
-
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-  background: var(--of-bg);
-  color: var(--of-text);
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  display: block;
+  background: #262626;
+  color: #e6e6e6;
+  font-family: 'Segoe UI', sans-serif;
   font-size: 14px;
   color-scheme: dark;
 }
 
-/* Frame popunjava ceo prozor */
-app-window-frame {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-}
 
-.of-form {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-}
+/* ===== Tab dugmad (Order / Allocations) ===== */
 
-/* Tabs: dugmad sede na sivoj liniji koja je gornja ivica group box-a */
+/* red sa tab dugmadima, poravnat sa okvirom ispod */
 .of-tabs {
   display: flex;
-  flex-wrap: wrap;
   gap: 2px;
   margin: 16px 20px 0;
 }
 
+/* jedno tab dugme; zaobljeno samo gore, kao pravi tab */
 .of-tab {
   padding: 7px 18px;
   border: 0;
@@ -58,156 +32,191 @@ app-window-frame {
 }
 
 .of-tab:hover {
-  background: #2f2f2f;
   color: #ffffff;
 }
 
-.of-tab-active,
-.of-tab-active:hover {
-  background: var(--of-accent);
+/* izabrani tab: crven */
+.of-tab-active {
+  background: #d8364a;
   color: #ffffff;
   font-weight: 600;
 }
 
-/* Panels: sadržaj taba uokviren kao group box */
+
+/* ===== Okvir oko sadržaja taba (kao GroupBox) ===== */
+/* gornja ivica je deblja - na njoj "stoje" tabovi; min-height drži oba taba iste visine */
 .of-panel {
-  flex: 1;
   min-height: 220px;
-  overflow: auto;
   margin: 0 20px;
   padding: 20px;
-  border: 1px solid var(--of-box-border);
-  border-top: 2px solid var(--of-box-border);
+  border: 1px solid #4a4a4a;
+  border-top-width: 2px;
   border-radius: 0 4px 4px 4px;
 }
 
-.of-panel-alloc {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
 
-/* Fields */
+/* ===== Raspored polja: mreža od 3 kolone (kao Grid sa 3 ColumnDefinition) ===== */
 .of-fields {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 18px 20px;
 }
 
-.of-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-}
-
+/* polje preko 2 kolone (Security) - kao Grid.ColumnSpan="2" */
 .of-span-2 {
   grid-column: span 2;
 }
 
-/* Polje počinje novi red */
-.of-row-start {
-  grid-column-start: 1;
+/* jedno polje: naslov iznad, kontrola ispod */
+.of-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.of-field label {
-  color: var(--of-label);
+/* naslov polja */
+.of-label {
+  color: #c8c8c8;
   font-size: 13px;
 }
 
-.of-input {
+
+/* ===== Kontrole za unos ===== */
+
+/* zajednički izgled: input, select i Security okvir */
+.of-input,
+.of-lookup {
   height: 32px;
-  width: 100%;
   box-sizing: border-box;
-  padding: 0 10px;
-  background: var(--of-input-bg);
-  border: 1px solid var(--of-input-border);
+  background: #333333;
+  border: 1px solid #4a4a4a;
   border-radius: 3px;
-  color: var(--of-text);
+  color: inherit;
   font: inherit;
   font-size: 13px;
 }
 
-select.of-input {
-  padding: 0 8px;
+/* input i select zauzimaju celu širinu polja */
+.of-input {
+  width: 100%;
+  padding: 0 10px;
 }
 
-.of-input::placeholder,
-.of-lookup input::placeholder {
-  color: var(--of-muted);
-}
-
-.of-input:focus {
+/* plava ivica na kontroli koja ima fokus */
+.of-input:focus,
+.of-lookup:focus-within {
   outline: none;
-  border-color: var(--of-focus);
+  border-color: #6aa0ff;
 }
 
-.of-input:disabled {
+/* zaključana polja (nalog više nije nov): tamnija pozadina, sivi tekst */
+.of-input:disabled,
+.of-lookup:has(input:disabled) {
   background: #2c2c2c;
-  color: #b0b0b0;
+  color: #9a9a9a;
 }
 
+/* brojevi poravnati desno */
 .of-number {
   text-align: right;
 }
 
-.of-input.of-invalid,
-.of-lookup.of-invalid {
-  border-color: var(--of-error);
+/* sivi tekst "Search security…" */
+::placeholder {
+  color: #9a9a9a;
 }
 
-/* Security lookup */
+
+/* ===== Security: input i dugme ↗ u jednom okviru ===== */
 .of-lookup {
   display: flex;
-  align-items: center;
-  height: 32px;
-  box-sizing: border-box;
-  background: var(--of-input-bg);
-  border: 1px solid var(--of-input-border);
-  border-radius: 3px;
 }
 
-.of-lookup:focus-within {
-  border-color: var(--of-focus);
-}
-
+/* input bez sopstvene ivice - ivicu daje okvir oko njega */
 .of-lookup input {
   flex: 1;
   min-width: 0;
-  height: 100%;
-  box-sizing: border-box;
   padding: 0 10px;
   background: transparent;
   border: 0;
   outline: none;
-  color: var(--of-text);
+  color: inherit;
   font: inherit;
-  font-size: 13px;
 }
 
+/* dugme ↗ desno, odvojeno tankom linijom */
 .of-icon-btn {
   width: 32px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
   background: transparent;
   border: 0;
-  border-left: 1px solid var(--of-input-border);
-  color: #cfcfcf;
+  border-left: 1px solid #4a4a4a;
+  color: #666666;
+}
+
+
+/* ===== Security: padajuća lista ispod polja ===== */
+
+/* omotač polja i liste; lista se pozicionira u odnosu na njega */
+.of-combo {
+  position: relative;
+}
+
+/* lista ispod polja, iznad ostatka forme (kao Popup u WPF-u) */
+.of-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  max-height: 220px;
+  overflow-y: auto;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  background: #2b2b2b;
+  border: 1px solid #555555;
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* jedan red liste: sid levo, description desno od njega */
+.of-dropdown li {
+  display: flex;
+  gap: 12px;
+  padding: 6px 10px;
+  font-size: 13px;
   cursor: pointer;
 }
 
-.of-icon-btn:disabled {
-  color: #666666;
+.of-dropdown li:hover {
+  background: #4a4a4a;
+}
+
+/* kolona sa sid-om: siva, poravnata desno */
+.of-dd-sid {
+  min-width: 60px;
+  color: #9a9a9a;
+  text-align: right;
+}
+
+/* "No match" kad ništa ne odgovara */
+.of-dropdown .of-dd-empty {
+  color: #9a9a9a;
   cursor: default;
 }
 
-/* Grid */
-.of-grid-wrap {
-  overflow-x: auto;
-  border: 1px solid #444444;
+.of-dropdown .of-dd-empty:hover {
+  background: transparent;
+}
+
+
+/* ===== Tabela alokacija ===== */
+
+/* tabela iznad, dugme New Allocation ispod */
+.of-panel-alloc {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .of-grid {
@@ -216,98 +225,82 @@ select.of-input {
   font-size: 13px;
 }
 
-.of-grid th {
-  padding: 8px 10px;
-  background: #111111;
-  color: #ffffff;
-  font-weight: 700;
-  text-align: left;
-  border: 1px solid #444444;
-  white-space: nowrap;
-}
-
+/* ćelije sa tankim ivicama */
+.of-grid th,
 .of-grid td {
   padding: 6px 10px;
   border: 1px solid #444444;
+  text-align: left;
 }
 
-.of-grid td.of-empty {
+/* zaglavlje kolona: skoro crno */
+.of-grid th {
+  background: #111111;
+  color: #ffffff;
+}
+
+/* poruka "No allocations" kad je tabela prazna */
+.of-grid .of-empty {
   height: 60px;
   text-align: center;
-  vertical-align: middle;
-  color: var(--of-muted);
+  color: #9a9a9a;
 }
 
-.of-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-}
 
-/* Footer: bez linije i pozadine */
+/* ===== Dugmad ===== */
+
+/* redovi dugmadi poravnati desno: New Allocation i Close/Book */
+.of-actions,
 .of-footer {
   display: flex;
-  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 10px;
+}
+
+/* razmak oko dugmadi na dnu forme */
+.of-footer {
   padding: 16px 20px 20px;
 }
 
+/* dugme skroz levo (Book); ostala dugmad ostaju desno */
+.of-left {
+  margin-right: auto;
+}
+
+/* obično dugme (Close, New Allocation) */
 .of-btn {
   height: 34px;
   min-width: 100px;
   padding: 0 20px;
   background: #1e1e1e;
-  border: 1px solid var(--of-input-border);
+  border: 1px solid #4a4a4a;
   border-radius: 3px;
-  color: var(--of-text);
+  color: inherit;
   font: inherit;
-  font-size: 14px;
   cursor: pointer;
 }
 
-.of-btn:hover {
-  background: #2a2a2a;
+/* malo svetlije kad je miš preko dugmeta (samo ako je dugme aktivno) */
+.of-btn:enabled:hover {
+  filter: brightness(1.2);
 }
 
+/* onemogućeno dugme (npr. Book posle snimanja): izbledelo */
+.of-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* glavno dugme (Book): crveno */
 .of-btn-primary {
-  background: var(--of-accent);
-  border-color: var(--of-accent);
+  background: #d8364a;
+  border-color: #d8364a;
   color: #ffffff;
 }
 
-.of-btn-primary:hover {
-  background: var(--of-accent-hover);
-  border-color: var(--of-accent-hover);
-}
-
+/* manje dugme (New Allocation) */
 .of-btn-sm {
   height: 32px;
   min-width: 0;
-  padding: 0 16px;
-  background: var(--of-input-bg);
   font-size: 13px;
-}
-
-.of-tab:focus-visible,
-.of-btn:focus-visible,
-.of-icon-btn:focus-visible {
-  outline: 1px solid var(--of-focus);
-  outline-offset: 1px;
-}
-
-@media (max-width: 860px) {
-  .of-fields {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 520px) {
-  .of-fields {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .of-span-2 {
-    grid-column: auto;
-  }
 }

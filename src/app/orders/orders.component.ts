@@ -1,8 +1,10 @@
 import { Component, OnInit, inject, signal, output } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
-import { ColDef, GetContextMenuItems, RowSelectionOptions, SelectionChangedEvent, StatusBar } from 'ag-grid-community';
+import { ColDef, GetContextMenuItems, RowDoubleClickedEvent, RowSelectionOptions, SelectionChangedEvent, StatusBar } from 'ag-grid-community';
 import { OrdersService } from '../common/orders.service';
 import { Order } from '../common/models';
+import { WindowService } from '../common/window/window.service';
+import { OrderViewModel } from '../order/order.view-model';
 import { delay } from 'rxjs';
 
 /** 1093.48 -> "1,093.48" */
@@ -18,6 +20,7 @@ const formatQty = (value: number | null | undefined) =>
 })
 export class OrdersComponent implements OnInit {
   private ordersService = inject(OrdersService);
+  private windows = inject(WindowService);
 
   orders = signal<Order[]>([]);
   error = signal('');
@@ -97,6 +100,11 @@ export class OrdersComponent implements OnInit {
     this.orderSelected.emit(e.api.getSelectedNodes()[0]?.data ?? null);
   }
 
+  /** dupli klik na red; group i Total red nemaju order, pa se preskaču */
+  onRowDoubleClicked(e: RowDoubleClickedEvent<Order>) {
+    if (e.data) this.openOrder(e.data);
+  }
+
   // ---- kontekstni meni ----
   getContextMenuItems: GetContextMenuItems<Order> = (params) => [
     {
@@ -108,7 +116,9 @@ export class OrdersComponent implements OnInit {
     ...(params.defaultItems ?? []),          // Copy, Export...
   ];
 
-  openOrder(order: Order) {
-    // TODO: otvoriti order formu
+  /** otvori postojeći nalog u order formi; ako je nešto snimljeno, osveži grid posle zatvaranja */
+  async openOrder(order: Order) {
+    const saved = await this.windows.show(new OrderViewModel(order));
+    if (saved) this.search();
   }
 }

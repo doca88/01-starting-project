@@ -1,5 +1,6 @@
 {
   "/orders":     { "target": "http://127.0.0.1:1111", "secure": false },
   "/managers":   { "target": "http://127.0.0.1:1111", "secure": false },
-  "/strategies": { "target": "http://127.0.0.1:1111", "secure": false }
+  "/strategies": { "target": "http://127.0.0.1:1111", "secure": false },
+  "/securities": { "target": "http://127.0.0.1:1111", "secure": false }
 }

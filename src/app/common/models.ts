@@ -8,9 +8,9 @@ export interface Strategy {
   display: string;
 }
 
-// TODO: dopuniti prema Security.cs
 export interface Security {
   sid: number;
+  description: string;
 }
 
 export interface Allocation {

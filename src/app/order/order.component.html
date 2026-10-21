@@ -1,92 +1,97 @@
-<app-window-frame [title]="vm.title" [subtitle]="vm.subtitle" (closeClicked)="close()">
+<app-window-frame [title]="vm.title" (closeClicked)="close()">
   <form class="of-form" [formGroup]="form" (ngSubmit)="book()">
 
-    <div class="of-tabs" role="tablist" aria-label="Order sections">
-      <button type="button" role="tab" class="of-tab"
-              [class.of-tab-active]="activeTab() === 'order'"
-              [attr.aria-selected]="activeTab() === 'order'"
-              (click)="activeTab.set('order')">Order</button>
-      <button type="button" role="tab" class="of-tab"
-              [class.of-tab-active]="activeTab() === 'allocations'"
-              [attr.aria-selected]="activeTab() === 'allocations'"
-              (click)="activeTab.set('allocations')">Allocations ({{ allocations().length }})</button>
+    <div class="of-tabs">
+      <button type="button" class="of-tab" [class.of-tab-active]="tab() === 'order'"
+              (click)="tab.set('order')">Order</button>
+      <button type="button" class="of-tab" [class.of-tab-active]="tab() === 'allocations'"
+              (click)="tab.set('allocations')">Allocations ({{ allocations().length }})</button>
     </div>
 
-    @if (activeTab() === 'order') {
-      <div class="of-panel" role="tabpanel" aria-label="Order">
+    @if (tab() === 'order') {
+      <div class="of-panel">
         <div class="of-fields">
 
+          <!-- Security: kucate sid, lista nudi poklapanja, izbor upisuje description -->
           <div class="of-field of-span-2">
-            <label [attr.for]="uid + '-security'">Security</label>
-            <div class="of-lookup" [class.of-invalid]="isInvalid('sid')">
-              <input #securityInput [id]="uid + '-security'" type="text" autocomplete="off"
-                     placeholder="Search security…"
-                     [attr.list]="uid + '-securities'"
-                     [value]="securityText()"
-                     (input)="onSecurityInput(securityInput.value)"
-                     (blur)="form.controls.sid.markAsTouched()">
-              <button type="button" class="of-icon-btn" aria-label="Open security"
-                      [disabled]="form.controls.sid.value === 0"
-                      (click)="openSecurity()">
-                <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="currentColor"
-                     stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M4.5 2.5h5v5" />
-                  <path d="M9.5 2.5l-7 7" />
-                </svg>
-              </button>
-            </div>
-            <datalist [id]="uid + '-securities'">
-              @for (s of securities(); track s.id) {
-                <option [value]="s.name"></option>
+            <span class="of-label">Security</span>
+            <div class="of-combo">
+              <span class="of-lookup">
+                <input #security type="text" placeholder="Search by SID…" autocomplete="off"
+                       aria-label="Security" cdkFocusInitial
+                       [disabled]="!editable()"
+                       [value]="securityText()"
+                       (input)="searchSecurity(security.value)"
+                       (click)="securityOpen.set(true)"
+                       (blur)="securityOpen.set(false)"
+                       (keydown.enter)="pickFirstSecurity($event)"
+                       (keydown.escape)="closeSecurityList($event)">
+                <!-- TODO: otvaranje prozora hartije -->
+                <button type="button" class="of-icon-btn" aria-label="Open security" disabled>
+                  <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                       stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M4.5 2.5h5v5" />
+                    <path d="M9.5 2.5l-7 7" />
+                  </svg>
+                </button>
+              </span>
+
+              @if (securityOpen()) {
+                <!-- mousedown + preventDefault: izbor se desi pre nego što polje izgubi fokus -->
+                <ul class="of-dropdown">
+                  @for (s of securityMatches(); track s.sid) {
+                    <li (mousedown)="$event.preventDefault(); pickSecurity(s)">
+                      <span class="of-dd-sid">{{ s.sid }}</span>
+                      <span>{{ s.description }}</span>
+                    </li>
+                  } @empty {
+                    <li class="of-dd-empty">No match</li>
+                  }
+                </ul>
               }
-            </datalist>
+            </div>
           </div>
 
-          <div class="of-field">
-            <label [attr.for]="uid + '-date'">Trade Date</label>
-            <input [id]="uid + '-date'" class="of-input" type="date" formControlName="tradeDate"
-                   [class.of-invalid]="isInvalid('tradeDate')">
-          </div>
+          <label class="of-field">
+            <span class="of-label">Trade Date</span>
+            <input class="of-input" type="date" formControlName="tradeDate">
+          </label>
 
-          <div class="of-field of-row-start">
-            <label [attr.for]="uid + '-qty'">Quantity</label>
-            <input [id]="uid + '-qty'" class="of-input of-number" type="number" step="any" min="0"
-                   placeholder="0" formControlName="quantity"
-                   [class.of-invalid]="isInvalid('quantity')">
-          </div>
+          <label class="of-field">
+            <span class="of-label">Quantity</span>
+            <input class="of-input of-number" type="number" formControlName="quantity">
+          </label>
 
-          <div class="of-field">
-            <label [attr.for]="uid + '-manager'">Manager</label>
-            <select [id]="uid + '-manager'" class="of-input" formControlName="managerId"
-                    [class.of-invalid]="isInvalid('managerId')">
+          <label class="of-field">
+            <span class="of-label">Manager</span>
+            <select class="of-input" formControlName="managerId">
               <option [ngValue]="0" disabled>Select manager</option>
-              @for (m of managers(); track m.id) {
+              @for (m of lookups.managers(); track m.id) {
                 <option [ngValue]="m.id">{{ m.display }}</option>
               }
             </select>
-          </div>
+          </label>
 
-          <div class="of-field">
-            <label [attr.for]="uid + '-strategy'">Strategy</label>
-            <select [id]="uid + '-strategy'" class="of-input" formControlName="strategyId"
-                    [class.of-invalid]="isInvalid('strategyId')">
+          <label class="of-field">
+            <span class="of-label">Strategy</span>
+            <select class="of-input" formControlName="strategyId">
               <option [ngValue]="0" disabled>Select strategy</option>
-              @for (s of strategies(); track s.id) {
+              @for (s of lookups.strategies(); track s.id) {
                 <option [ngValue]="s.id">{{ s.display }}</option>
               }
             </select>
-          </div>
+          </label>
 
         </div>
       </div>
     } @else {
-      <div class="of-panel of-panel-alloc" role="tabpanel" aria-label="Allocations">
+      <div class="of-panel of-panel-alloc">
         <div class="of-grid-wrap">
           <table class="of-grid">
             <thead>
               <tr>
                 <!-- TODO: kolone iz Allocation modela -->
-                <th scope="col">#</th>
+                <th>#</th>
               </tr>
             </thead>
             <tbody>
@@ -103,14 +108,21 @@
           </table>
         </div>
         <div class="of-actions">
-          <button type="button" class="of-btn of-btn-sm" (click)="newAllocation.emit()">New Allocation</button>
+          <!-- TODO: nova alokacija -->
+          <button type="button" class="of-btn of-btn-sm">New Allocation</button>
         </div>
       </div>
     }
 
     <footer class="of-footer">
+      <!-- Book levo; aktivan za novi nalog i u Edit režimu -->
+      <button type="submit" class="of-btn of-btn-primary of-left" [disabled]="saving() || !editable()">Book</button>
+
+      <!-- Edit: aktivan samo kad je forma readonly (snimljen/postojeći nalog) -->
+      <button type="button" class="of-btn" [disabled]="editable()" (click)="edit()">Edit</button>
+      <!-- Refresh: ponovo učitaj nalog; novi nalog nema šta da učita -->
+      <button type="button" class="of-btn" [disabled]="vm.isNew || saving()" (click)="refresh()">Refresh</button>
       <button type="button" class="of-btn" (click)="close()">Close</button>
-      <button type="submit" class="of-btn of-btn-primary">Book</button>
     </footer>
 
   </form>
