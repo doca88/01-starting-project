@@ -71,3 +71,35 @@ ag-grid-angular {
   font-weight: 700;
   background: #1a1a1a;
 }
+
+/* sporedno dugme (Close, New Order) */
+.btn-ghost {
+  background: transparent;
+  color: #e0e0e0;
+  border-color: #4a4a4a;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: #3a3a3a;
+  box-shadow: none;
+}
+
+/* ---------- prozori (WindowService) ---------- */
+.app-window-backdrop {
+  background: rgba(8, 8, 8, 0.62);
+  backdrop-filter: blur(2px);
+}
+
+/* prozor se pojavi sa blagim "uplivavanjem" */
+.app-window-panel {
+  animation: window-in 0.16s ease-out;
+}
+
+@keyframes window-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+
+.cdk-dialog-container:focus {
+  outline: none;
+}

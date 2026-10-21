@@ -1,0 +1,10 @@
+<app-window-frame [title]="vm.title" [subtitle]="vm.subtitle" (closeClicked)="vm.close()">
+
+  <div class="placeholder">Order form fields come in the next step.</div>
+
+  <ng-container windowFooter>
+    <button type="button" class="btn btn-ghost" (click)="vm.close()">Close</button>
+    <button type="button" class="btn" (click)="vm.book()">Book</button>
+  </ng-container>
+
+</app-window-frame>

@@ -1,8 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { OrdersComponent } from './orders/orders.component';
 import { AllocationsComponent } from './allocations/allocations.component';
-import { Order } from './common/models';
 import { LoadingComponent } from './loading/loading.component';
+import { Order } from './common/models';
+import { WindowService } from './common/window/window.service';
+import { OrderViewModel } from './order/order.view-model';
 
 @Component({
   selector: 'app-root',
@@ -12,5 +14,14 @@ import { LoadingComponent } from './loading/loading.component';
   styleUrl: './app.component.css',
 })
 export class AppComponent {
+  private windows = inject(WindowService);
+
   selectedOrder = signal<Order | null>(null);
+
+  async newOrder(orders: OrdersComponent) {
+    const saved = await this.windows.show(new OrderViewModel());
+    if (saved) {
+      orders.search();   // order je snimljen -> osveži grid
+    }
+  }
 }

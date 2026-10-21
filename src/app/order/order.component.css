@@ -1,0 +1,10 @@
+:host {
+  display: block;
+  height: 100%;   /* popuni prozor */
+}
+
+.placeholder {
+  padding: 48px 16px;
+  text-align: center;
+  color: #9a9a9a;
+}
