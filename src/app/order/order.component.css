@@ -1,10 +1,313 @@
 :host {
-  display: block;
-  height: 100%;   /* popuni prozor */
+  --of-accent: #d8364a;
+  --of-accent-hover: #c42e41;
+  --of-bg: #262626;
+  --of-border: #3a3a3a;
+  --of-box-border: #4a4a4a;
+  --of-input-bg: #333333;
+  --of-input-border: #4a4a4a;
+  --of-text: #e6e6e6;
+  --of-label: #c8c8c8;
+  --of-muted: #9a9a9a;
+  --of-focus: #6aa0ff;
+  --of-error: #e5534b;
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--of-bg);
+  color: var(--of-text);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  color-scheme: dark;
 }
 
-.placeholder {
-  padding: 48px 16px;
+/* Frame popunjava ceo prozor */
+app-window-frame {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.of-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Tabs: dugmad sede na sivoj liniji koja je gornja ivica group box-a */
+.of-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin: 16px 20px 0;
+}
+
+.of-tab {
+  padding: 7px 18px;
+  border: 0;
+  border-radius: 3px 3px 0 0;
+  background: transparent;
+  color: #cfcfcf;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.of-tab:hover {
+  background: #2f2f2f;
+  color: #ffffff;
+}
+
+.of-tab-active,
+.of-tab-active:hover {
+  background: var(--of-accent);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Panels: sadržaj taba uokviren kao group box */
+.of-panel {
+  flex: 1;
+  min-height: 220px;
+  overflow: auto;
+  margin: 0 20px;
+  padding: 20px;
+  border: 1px solid var(--of-box-border);
+  border-top: 2px solid var(--of-box-border);
+  border-radius: 0 4px 4px 4px;
+}
+
+.of-panel-alloc {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Fields */
+.of-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px 20px;
+}
+
+.of-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.of-span-2 {
+  grid-column: span 2;
+}
+
+/* Polje počinje novi red */
+.of-row-start {
+  grid-column-start: 1;
+}
+
+.of-field label {
+  color: var(--of-label);
+  font-size: 13px;
+}
+
+.of-input {
+  height: 32px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 10px;
+  background: var(--of-input-bg);
+  border: 1px solid var(--of-input-border);
+  border-radius: 3px;
+  color: var(--of-text);
+  font: inherit;
+  font-size: 13px;
+}
+
+select.of-input {
+  padding: 0 8px;
+}
+
+.of-input::placeholder,
+.of-lookup input::placeholder {
+  color: var(--of-muted);
+}
+
+.of-input:focus {
+  outline: none;
+  border-color: var(--of-focus);
+}
+
+.of-input:disabled {
+  background: #2c2c2c;
+  color: #b0b0b0;
+}
+
+.of-number {
+  text-align: right;
+}
+
+.of-input.of-invalid,
+.of-lookup.of-invalid {
+  border-color: var(--of-error);
+}
+
+/* Security lookup */
+.of-lookup {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  box-sizing: border-box;
+  background: var(--of-input-bg);
+  border: 1px solid var(--of-input-border);
+  border-radius: 3px;
+}
+
+.of-lookup:focus-within {
+  border-color: var(--of-focus);
+}
+
+.of-lookup input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0 10px;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--of-text);
+  font: inherit;
+  font-size: 13px;
+}
+
+.of-icon-btn {
+  width: 32px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--of-input-border);
+  color: #cfcfcf;
+  cursor: pointer;
+}
+
+.of-icon-btn:disabled {
+  color: #666666;
+  cursor: default;
+}
+
+/* Grid */
+.of-grid-wrap {
+  overflow-x: auto;
+  border: 1px solid #444444;
+}
+
+.of-grid {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.of-grid th {
+  padding: 8px 10px;
+  background: #111111;
+  color: #ffffff;
+  font-weight: 700;
+  text-align: left;
+  border: 1px solid #444444;
+  white-space: nowrap;
+}
+
+.of-grid td {
+  padding: 6px 10px;
+  border: 1px solid #444444;
+}
+
+.of-grid td.of-empty {
+  height: 60px;
   text-align: center;
-  color: #9a9a9a;
+  vertical-align: middle;
+  color: var(--of-muted);
+}
+
+.of-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Footer: bez linije i pozadine */
+.of-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 20px 20px;
+}
+
+.of-btn {
+  height: 34px;
+  min-width: 100px;
+  padding: 0 20px;
+  background: #1e1e1e;
+  border: 1px solid var(--of-input-border);
+  border-radius: 3px;
+  color: var(--of-text);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.of-btn:hover {
+  background: #2a2a2a;
+}
+
+.of-btn-primary {
+  background: var(--of-accent);
+  border-color: var(--of-accent);
+  color: #ffffff;
+}
+
+.of-btn-primary:hover {
+  background: var(--of-accent-hover);
+  border-color: var(--of-accent-hover);
+}
+
+.of-btn-sm {
+  height: 32px;
+  min-width: 0;
+  padding: 0 16px;
+  background: var(--of-input-bg);
+  font-size: 13px;
+}
+
+.of-tab:focus-visible,
+.of-btn:focus-visible,
+.of-icon-btn:focus-visible {
+  outline: 1px solid var(--of-focus);
+  outline-offset: 1px;
+}
+
+@media (max-width: 860px) {
+  .of-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .of-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .of-span-2 {
+    grid-column: auto;
+  }
 }

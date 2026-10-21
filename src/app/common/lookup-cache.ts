@@ -24,9 +24,15 @@ export class LookupCache {
 
   /** ponovo ucitaj sa servera (npr. posle dodavanja novog managera) */
   refresh() {
-    this.load<Manager>('/managers/query').subscribe((list) => this.managers.set(list));
-    this.load<Strategy>('/strategies/query').subscribe((list) => this.strategies.set(list));
-  }
+  this.load<Manager>('/managers/query').subscribe({
+    next: (list) => this.managers.set(list),
+    error: (e) => console.error('managers load failed', e),
+  });
+  this.load<Strategy>('/strategies/query').subscribe({
+    next: (list) => this.strategies.set(list),
+    error: (e) => console.error('strategies load failed', e),
+  });
+}
 
   /** POST /xxx/query sa praznim upitom, sortirano po imenu */
   private load<T extends { display: string }>(url: string) {

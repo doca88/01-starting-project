@@ -1,10 +1,117 @@
-<app-window-frame [title]="vm.title" [subtitle]="vm.subtitle" (closeClicked)="vm.close()">
+<app-window-frame [title]="vm.title" [subtitle]="vm.subtitle" (closeClicked)="close()">
+  <form class="of-form" [formGroup]="form" (ngSubmit)="book()">
 
-  <div class="placeholder">Order form fields come in the next step.</div>
+    <div class="of-tabs" role="tablist" aria-label="Order sections">
+      <button type="button" role="tab" class="of-tab"
+              [class.of-tab-active]="activeTab() === 'order'"
+              [attr.aria-selected]="activeTab() === 'order'"
+              (click)="activeTab.set('order')">Order</button>
+      <button type="button" role="tab" class="of-tab"
+              [class.of-tab-active]="activeTab() === 'allocations'"
+              [attr.aria-selected]="activeTab() === 'allocations'"
+              (click)="activeTab.set('allocations')">Allocations ({{ allocations().length }})</button>
+    </div>
 
-  <ng-container windowFooter>
-    <button type="button" class="btn btn-ghost" (click)="vm.close()">Close</button>
-    <button type="button" class="btn" (click)="vm.book()">Book</button>
-  </ng-container>
+    @if (activeTab() === 'order') {
+      <div class="of-panel" role="tabpanel" aria-label="Order">
+        <div class="of-fields">
 
+          <div class="of-field of-span-2">
+            <label [attr.for]="uid + '-security'">Security</label>
+            <div class="of-lookup" [class.of-invalid]="isInvalid('sid')">
+              <input #securityInput [id]="uid + '-security'" type="text" autocomplete="off"
+                     placeholder="Search security…"
+                     [attr.list]="uid + '-securities'"
+                     [value]="securityText()"
+                     (input)="onSecurityInput(securityInput.value)"
+                     (blur)="form.controls.sid.markAsTouched()">
+              <button type="button" class="of-icon-btn" aria-label="Open security"
+                      [disabled]="form.controls.sid.value === 0"
+                      (click)="openSecurity()">
+                <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+                     stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4.5 2.5h5v5" />
+                  <path d="M9.5 2.5l-7 7" />
+                </svg>
+              </button>
+            </div>
+            <datalist [id]="uid + '-securities'">
+              @for (s of securities(); track s.id) {
+                <option [value]="s.name"></option>
+              }
+            </datalist>
+          </div>
+
+          <div class="of-field">
+            <label [attr.for]="uid + '-date'">Trade Date</label>
+            <input [id]="uid + '-date'" class="of-input" type="date" formControlName="tradeDate"
+                   [class.of-invalid]="isInvalid('tradeDate')">
+          </div>
+
+          <div class="of-field of-row-start">
+            <label [attr.for]="uid + '-qty'">Quantity</label>
+            <input [id]="uid + '-qty'" class="of-input of-number" type="number" step="any" min="0"
+                   placeholder="0" formControlName="quantity"
+                   [class.of-invalid]="isInvalid('quantity')">
+          </div>
+
+          <div class="of-field">
+            <label [attr.for]="uid + '-manager'">Manager</label>
+            <select [id]="uid + '-manager'" class="of-input" formControlName="managerId"
+                    [class.of-invalid]="isInvalid('managerId')">
+              <option [ngValue]="0" disabled>Select manager</option>
+              @for (m of managers(); track m.id) {
+                <option [ngValue]="m.id">{{ m.display }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="of-field">
+            <label [attr.for]="uid + '-strategy'">Strategy</label>
+            <select [id]="uid + '-strategy'" class="of-input" formControlName="strategyId"
+                    [class.of-invalid]="isInvalid('strategyId')">
+              <option [ngValue]="0" disabled>Select strategy</option>
+              @for (s of strategies(); track s.id) {
+                <option [ngValue]="s.id">{{ s.display }}</option>
+              }
+            </select>
+          </div>
+
+        </div>
+      </div>
+    } @else {
+      <div class="of-panel of-panel-alloc" role="tabpanel" aria-label="Allocations">
+        <div class="of-grid-wrap">
+          <table class="of-grid">
+            <thead>
+              <tr>
+                <!-- TODO: kolone iz Allocation modela -->
+                <th scope="col">#</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (a of allocations(); track $index) {
+                <tr>
+                  <td>{{ $index + 1 }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td class="of-empty" colspan="99">No allocations</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="of-actions">
+          <button type="button" class="of-btn of-btn-sm" (click)="newAllocation.emit()">New Allocation</button>
+        </div>
+      </div>
+    }
+
+    <footer class="of-footer">
+      <button type="button" class="of-btn" (click)="close()">Close</button>
+      <button type="submit" class="of-btn of-btn-primary">Book</button>
+    </footer>
+
+  </form>
 </app-window-frame>
