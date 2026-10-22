@@ -1,4 +1,4 @@
-<app-window-frame [title]="vm.title" (closeClicked)="close()">
+<app-window-frame [title]="orderViewModel.title" (closeClicked)="close()">
   <form class="of-form" [formGroup]="form" (ngSubmit)="book()">
 
     <div class="of-tabs">
@@ -121,7 +121,7 @@
       <!-- Edit: aktivan samo kad je forma readonly (snimljen/postojeći nalog) -->
       <button type="button" class="of-btn" [disabled]="editable()" (click)="edit()">Edit</button>
       <!-- Refresh: ponovo učitaj nalog; novi nalog nema šta da učita -->
-      <button type="button" class="of-btn" [disabled]="vm.isNew || saving()" (click)="refresh()">Refresh</button>
+      <button type="button" class="of-btn" [disabled]="orderViewModel.isNew || saving()" (click)="refresh()">Refresh</button>
       <button type="button" class="of-btn" (click)="close()">Close</button>
     </footer>
 

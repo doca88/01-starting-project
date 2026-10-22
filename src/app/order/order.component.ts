@@ -16,15 +16,15 @@ import { OrderViewModel } from './order.view-model';
 })
 export class OrderComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly orders = inject(OrdersService);
-  protected readonly vm = injectViewModel<OrderViewModel>();
+  private readonly ordersService = inject(OrdersService);
+  protected readonly orderViewModel = injectViewModel<OrderViewModel>();
   protected readonly lookups = inject(LookupCache);
 
   /** Aktivni tab */
   readonly tab = signal<'order' | 'allocations'>('order');
 
   /** Alokacije trenutnog naloga; osvežavaju se same posle snimanja */
-  readonly allocations = computed(() => this.vm.order()?.allocations ?? []);
+  readonly allocations = computed(() => this.orderViewModel.order()?.allocations ?? []);
 
   /** true dok traje snimanje - Book je tada onemogućen (nema duplog snimanja) */
   readonly saving = signal(false);
@@ -33,15 +33,15 @@ export class OrderComponent {
   readonly editing = signal(false);
 
   /** polja se mogu menjati: novi nalog ili Edit režim; inače je forma readonly */
-  readonly editable = computed(() => this.vm.isNew || this.editing());
+  readonly editable = computed(() => this.orderViewModel.isNew || this.editing());
 
   /** Polja forme, popunjena iz naloga (ili prazna za novi) */
   readonly form = this.fb.nonNullable.group({
-    sid: this.vm.order()?.sid ?? 0,
-    tradeDate: (this.vm.order()?.tradeDate ?? new Date().toLocaleDateString('sv-SE')).substring(0, 10), // yyyy-MM-dd
-    quantity: this.vm.order()?.quantity ?? 0,
-    managerId: this.vm.order()?.managerId ?? 0,
-    strategyId: this.vm.order()?.strategyId ?? 0,
+    sid: this.orderViewModel.order()?.sid ?? 0,
+    tradeDate: (this.orderViewModel.order()?.tradeDate ?? new Date().toLocaleDateString('sv-SE')).substring(0, 10), // yyyy-MM-dd
+    quantity: this.orderViewModel.order()?.quantity ?? 0,
+    managerId: this.orderViewModel.order()?.managerId ?? 0,
+    strategyId: this.orderViewModel.order()?.strategyId ?? 0,
   });
 
   constructor() {
@@ -55,7 +55,7 @@ export class OrderComponent {
   // ----- Security: padajuća lista koja pretražuje po sid-u, a u polje upisuje description -----
 
   /** tekst koji se vidi u polju (posle izbora: description) */
-  readonly securityText = signal(this.vm.order()?.security?.description ?? '');
+  readonly securityText = signal(this.orderViewModel.order()?.security?.description ?? '');
 
   /** ono što je korisnik otkucao; po tome se filtrira lista */
   readonly securityQuery = signal('');
@@ -111,12 +111,12 @@ export class OrderComponent {
 
   /** Refresh: ponovo učitaj nalog sa servera; nesnimljene izmene se odbacuju */
   refresh() {
-    const id = this.vm.order()?.orderId;
+    const id = this.orderViewModel.order()?.orderId;
     if (!id) return;
 
-    this.orders.get(id).subscribe({
+    this.ordersService.get(id).subscribe({
       next: (o: Order) => {
-        this.vm.order.set(o);
+        this.orderViewModel.order.set(o);
         this.form.setValue({
           sid: o.sid,
           tradeDate: o.tradeDate.substring(0, 10),
@@ -133,7 +133,7 @@ export class OrderComponent {
 
   /** Zatvara prozor; pozivalac dobija poslednji snimljeni nalog (da osveži grid) */
   close() {
-    this.vm.close(this.vm.order() ?? undefined);
+    this.orderViewModel.close(this.orderViewModel.order() ?? undefined);
   }
 
   /**
@@ -146,15 +146,15 @@ export class OrderComponent {
     const v = this.form.getRawValue();
     this.saving.set(true);
 
-    this.orders
+    this.ordersService
       .save({
         ...v,
-        orderId: this.vm.order()?.orderId ?? 0,
+        orderId: this.orderViewModel.order()?.orderId ?? 0,
         tradeDate: `${v.tradeDate}T00:00:00`,
       })
       .subscribe({
         next: (saved: Order) => {
-          this.vm.order.set(saved);   // naslov prozora prelazi na "Order <id>"
+          this.orderViewModel.order.set(saved);   // naslov prozora prelazi na "Order <id>"
           this.editing.set(false);    // nazad u readonly
           this.saving.set(false);
         },
