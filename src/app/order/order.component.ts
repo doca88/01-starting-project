@@ -1,18 +1,20 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { LookupCache } from '../common/lookup-cache';
-import { Order, Security } from '../common/models';
 import { OrdersService } from '../common/orders.service';
 import { injectViewModel } from '../common/window/window.service';
 import { WindowFrameComponent } from '../common/window/window-frame.component';
 import { OrderViewModel } from './order.view-model';
+import { AllocationGridComponent } from '../allocation-grid/allocation-grid.component';
+import { Order, Security } from '../common/models';
+
 
 @Component({
   selector: 'app-order-form',
   standalone: true,
-  imports: [ReactiveFormsModule, WindowFrameComponent],
+  imports: [ReactiveFormsModule, WindowFrameComponent, AllocationGridComponent],
   templateUrl: './order.component.html',
-  styleUrl: './order.component.css',
+  styleUrls: ['./order.component.css'],
 })
 export class OrderComponent {
   private readonly fb = inject(FormBuilder);
@@ -164,4 +166,4 @@ export class OrderComponent {
         },
       });
   }
-}
+  }

@@ -1,12 +1,3 @@
-<div class="title">
-  Allocations
-  @if (orderId() !== null) {
-    <span class="muted">Order Id [{{ orderId() }}]</span>
-  } @else {
-    <span class="muted">(select an order)</span>
-  }
-</div>
-
 <ag-grid-angular
   class="grid"
   [rowData]="allocations()"

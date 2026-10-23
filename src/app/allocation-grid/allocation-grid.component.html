@@ -1,0 +1,9 @@
+<ag-grid-angular class="allocationsGrid"
+  [rowData]="allocations()"
+  [columnDefs]="columns"
+  [defaultColDef]="defaultColDef"
+  [getRowId]="getRowId"
+  [stopEditingWhenCellsLoseFocus]="true"
+  (gridReady)="onGridReady($event)"
+  (cellValueChanged)="dirty.set(true)">
+</ag-grid-angular>

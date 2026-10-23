@@ -13,7 +13,38 @@
 
   display: flex;              /* vertikalni StackPanel... */
   flex-direction: column;     /* ...odozgo nadole */
-  min-height: 300px;          /* najmanja visina forme, kao MinHeight */
+  height: 300px;         
+}
+
+/* ===== tabs ===== */
+.tab
+{
+  height: 28px;
+  padding: 0 14px;            /* razmak teksta od ivica taba */
+  border: none;               /* skida default ivicu dugmeta */
+  border-radius: 3px 3px 0 0; /* zaobljeni samo gornji uglovi */
+  background: transparent;    /* neaktivan tab: bez pozadine */
+  color: #cfcfcf;             /* neaktivan tab: prigušen tekst */
+  font: inherit;              /* dugme ne nasleđuje font samo */
+  cursor: pointer;
+}
+
+.tab:hover:not(.tabActive)
+{
+  background: var(--control-bg);  /* IsMouseOver, samo za neaktivne */
+  color: #ffffff;
+}
+
+.tab:focus-visible
+{
+  outline: 1px solid var(--focus);  /* fokus sa tastature */
+}
+
+.tabActive
+{
+  background: var(--accent);  /* aktivan tab: crven */
+  color: #ffffff;
+  font-weight: 600;           /* SemiBold */
 }
 
 /* ===== polja: grid 4 kolone ===== */
@@ -84,6 +115,37 @@
   border-color: var(--focus); /* svetlija siva ivica: fokus mora da se vidi */
 }
 
+/* ===== lista selecta (Manager, Strategy): samo Chrome/Edge, ostali vide nativnu ===== */
+@supports (appearance: base-select)
+{
+  select.control,
+  select.control::picker(select)
+  {
+    appearance: base-select;  /* lista postaje stilizovana površina umesto sistemske */
+  }
+
+  select.control::picker(select)
+  {
+    background: var(--list-bg);
+    border: 1px solid var(--control-border);
+    border-radius: 4px;
+    padding: 4px 0;
+  }
+
+  select.control option
+  {
+    padding: 4px 8px;
+    color: #e0e0e0;
+  }
+
+  select.control option:hover,
+  select.control option:focus
+  {
+    background: var(--hover-bg);  /* tamno siva umesto sistemske plave */
+    outline: none;
+  }
+}
+
 /* ↗ dugme uz Security */
 .securityButton
 {
@@ -149,7 +211,7 @@
 .btn
 {
   height: 28px;
-  border-radius: 5px;
+  border-radius: 3px;
   background: var(--accent);
   color: #ffffff;
   font-weight: 600;           /* SemiBold */
@@ -175,4 +237,12 @@
 {
   opacity: 0.45;              /* IsEnabled=False */
   cursor: not-allowed;
+}
+
+.allocations
+{
+  display: grid;                            /* kontejner: naslov pa grid... */
+  grid-template-rows: auto minmax(0, 1fr);  /* ...naslov koliko treba, grid ostatak */
+  flex: 1;                                  /* dete forme: uzima ostatak visine, gura footer na dno */
+  padding: 8px;                             /* isti razmak od ivica kao .fields */
 }

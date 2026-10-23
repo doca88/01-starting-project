@@ -1,18 +1,17 @@
 <app-window-frame [title]="orderViewModel.title" (closeClicked)="close()">
   <form class="form" [formGroup]="form" (ngSubmit)="book()">
-    <div class="tabs">
+    <div>
       <button
         type="button"
-        class="orderTab"
-        [class.of-tab-active]="tab() === 'order'"
-        (click)="tab.set('order')"
-      >
-        Order
-      </button>
-      <!-- <button type="button" class="allocationTab" [class.of-tab-active]="tab() === 'allocations'"
-              (click)="tab.set('allocations')">Allocations ({{ allocations().length }})</button> -->
+        class="tab"
+        [class.tabActive]="tab() === 'order'"
+        (click)="tab.set('order')"> Order</button>
+      <button type="button" class="tab" [class.tabActive]="tab() === 'allocations'"
+              (click)="tab.set('allocations')">Allocations ({{ allocations().length }})</button>
     </div>
 
+   
+    @if(tab() === 'order'){ 
     <div class="fields">
       <!-- Security: kucate sid, lista nudi poklapanja, izbor upisuje description -->
       <div class="securityControlPanel">
@@ -100,7 +99,15 @@
         </select>
       </label>
     </div>
+  }
+  @else{
 
+     <div class="allocations">
+        <div class="title">Allocations</div>
+        <app-allocation-grid/>
+    </div>
+
+  }
     <footer class="footer">
       <!-- Book levo; aktivan za novi nalog i u Edit režimu -->
       <button type="submit" class="btn" [disabled]="saving() || !editable()">

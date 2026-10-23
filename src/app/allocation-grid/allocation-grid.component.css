@@ -1,0 +1,6 @@
+
+.allocationsGrid
+{
+  display: block;           /* ag-grid-angular je po defaultu inline */
+  height: 100%;             /* popunjava red koji mu daje .allocations */
+}
