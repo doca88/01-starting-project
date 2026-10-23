@@ -104,7 +104,7 @@
 
      <div class="allocations">
         <div class="title">Allocations</div>
-        <app-allocation-grid/>
+       <app-allocation-grid [(allocations)]="allocations" [editable]="editable()" />
     </div>
 
   }

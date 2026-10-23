@@ -1,9 +1,14 @@
 <ag-grid-angular class="allocationsGrid"
-  [rowData]="allocations()"
+  [rowData]="rows()"
   [columnDefs]="columns"
   [defaultColDef]="defaultColDef"
   [getRowId]="getRowId"
+  [getRowStyle]="getRowStyle"
+  [postSortRows]="postSortRows"
+  [getContextMenuItems]="getContextMenuItems"
   [stopEditingWhenCellsLoseFocus]="true"
   (gridReady)="onGridReady($event)"
-  (cellValueChanged)="dirty.set(true)">
+  (cellValueChanged)="onCellValueChanged($event)"
+  (modelUpdated)="tryEditInputRow()"
+  (keydown.escape)="onEscape($event)">
 </ag-grid-angular>

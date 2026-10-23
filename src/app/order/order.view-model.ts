@@ -2,8 +2,7 @@ import { WritableSignal, signal } from '@angular/core';
 import { WindowViewModel } from '../common/window/window-view-model';
 import { Order } from '../common/models';
 
-export type OrderDraft = Pick<Order, 'orderId' | 'quantity' | 'tradeDate' | 'managerId' | 'strategyId' | 'sid'>;
-
+export type OrderDraft = Pick<Order, 'orderId' | 'quantity' | 'tradeDate' | 'managerId' | 'strategyId' | 'sid' | 'allocations'>;
 /**
  * ViewModel order forme. order = null -> novi order.
  * Rezultat prozora je poslednji snimljeni Order (ili undefined ako ništa nije snimljeno).

@@ -6,8 +6,7 @@ import { injectViewModel } from '../common/window/window.service';
 import { WindowFrameComponent } from '../common/window/window-frame.component';
 import { OrderViewModel } from './order.view-model';
 import { AllocationGridComponent } from '../allocation-grid/allocation-grid.component';
-import { Order, Security } from '../common/models';
-
+import { Allocation, Order, Security } from '../common/models';
 
 @Component({
   selector: 'app-order-form',
@@ -25,8 +24,12 @@ export class OrderComponent {
   /** Aktivni tab */
   readonly tab = signal<'order' | 'allocations'>('order');
 
-  /** Alokacije trenutnog naloga; osvežavaju se same posle snimanja */
-  readonly allocations = computed(() => this.orderViewModel.order()?.allocations ?? []);
+  /**
+   * Radna kopija alokacija trenutnog naloga: grid upisuje izmene ovde, a ne u order().
+   * Grid je menja preko [(allocations)] (popunjen input red, Delete, editovanje ćelija).
+   * Izmene preživljavaju prelazak sa taba na tab; Book i Refresh je prave iznova.
+   */
+  readonly allocations = signal<Allocation[]>(this.copyAllocations());
 
   /** true dok traje snimanje - Book je tada onemogućen (nema duplog snimanja) */
   readonly saving = signal(false);
@@ -127,6 +130,7 @@ export class OrderComponent {
           strategyId: o.strategyId,
         });
         this.securityText.set(o.security?.description ?? '');
+        this.allocations.set(this.copyAllocations());   // nesnimljene izmene u gridu se odbacuju
         this.editing.set(false);   // nazad u readonly
       },
       error: (e: unknown) => console.error('order refresh failed', e),
@@ -153,10 +157,14 @@ export class OrderComponent {
         ...v,
         orderId: this.orderViewModel.order()?.orderId ?? 0,
         tradeDate: `${v.tradeDate}T00:00:00`,
+        allocations: this.allocations()
+          .filter((a) => a.managerId && a.strategyId && a.quantity > 0)     // nepopunjeni redovi se ne šalju
+          .map((a) => (a.allocationId < 0 ? { ...a, allocationId: 0 } : a)), // novi red: id dodeljuje server
       })
       .subscribe({
         next: (saved: Order) => {
           this.orderViewModel.order.set(saved);   // naslov prozora prelazi na "Order <id>"
+          this.allocations.set(this.copyAllocations());   // alokacije kako ih je server snimio
           this.editing.set(false);    // nazad u readonly
           this.saving.set(false);
         },
@@ -165,5 +173,10 @@ export class OrderComponent {
           this.saving.set(false);
         },
       });
+  }
+
+  /** Kopija alokacija iz naloga (grid menja kopiju, order() ostaje poslednje snimljeno stanje) */
+  private copyAllocations(): Allocation[] {
+    return structuredClone(this.orderViewModel.order()?.allocations ?? []);
   }
   }
