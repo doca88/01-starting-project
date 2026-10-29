@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, output } from '@angular/core';
+import { Component, OnInit, inject, signal, output, viewChild } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef, GetContextMenuItems, RowDoubleClickedEvent, RowSelectionOptions, SelectionChangedEvent, StatusBar } from 'ag-grid-community';
 import { OrdersService } from '../common/orders.service';
@@ -6,6 +6,7 @@ import { Order } from '../common/models';
 import { WindowService } from '../common/window/window.service';
 import { OrderViewModel } from '../order/order.view-model';
 import { delay } from 'rxjs';
+import { OrdersFilterComponent } from '../orders-filter/orders-filter.component';
 
 /** 1093.48 -> "1,093.48" */
 const formatQty = (value: number | null | undefined) =>
@@ -14,14 +15,13 @@ const formatQty = (value: number | null | undefined) =>
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [AgGridAngular],
+  imports: [AgGridAngular, OrdersFilterComponent],
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.css',
 })
 export class OrdersComponent implements OnInit {
   private ordersService = inject(OrdersService);
   private windows = inject(WindowService);
-
   orders = signal<Order[]>([]);
   error = signal('');
   orderSelected = output<Order | null>();
@@ -121,4 +121,10 @@ export class OrdersComponent implements OnInit {
     const saved = await this.windows.show(new OrderViewModel(order));
     if (saved) this.search();
   }
+
+  private filterBar = viewChild(OrdersFilterComponent);
+
+clear() {
+  this.filterBar()?.clear();
+}
 }

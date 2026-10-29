@@ -1,0 +1,40 @@
+
+<label class="field">
+  <span class="label">Sid</span>
+  <input class="control" type="text" [(ngModel)]="sid" />
+</label>
+
+<label class="field">
+  <span class="label">Order Id</span>
+  <input class="control" type="text" [(ngModel)]="orderId" />
+</label>
+
+<label class="field">
+  <span class="label">Start Date</span>
+  <input class="control" type="date" [(ngModel)]="startDate" />
+</label>
+
+<label class="field">
+  <span class="label">End Date</span>
+  <input class="control" type="date" [(ngModel)]="endDate" />
+</label>
+
+<label class="field">
+  <span class="label">Manager</span>
+  <select class="control" [(ngModel)]="managerId">
+    <option [ngValue]="null">All</option>
+    @for (m of lookups.managers(); track m.id) {
+      <option [ngValue]="m.id">{{ m.display }}</option>
+    }
+  </select>
+</label>
+
+<label class="field">
+  <span class="label">Strategy</span>
+  <select class="control" [(ngModel)]="strategyId">
+    <option [ngValue]="null">All</option>
+    @for (s of lookups.strategies(); track s.id) {
+      <option [ngValue]="s.id">{{ s.display }}</option>
+    }
+  </select>
+</label>

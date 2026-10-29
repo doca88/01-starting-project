@@ -18,4 +18,5 @@
 <div class="footer">
   <button class="btn btn-ghost" (click)="newOrder(orders)">New Order</button>
   <button class="btn" (click)="orders.search()" [disabled]="orders.loading()">Search</button>
+  <button class="btn" (click)="orders.clear()" [disabled]="orders.loading()">Clear</button>
 </div>
