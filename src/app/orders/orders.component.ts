@@ -78,11 +78,14 @@ export class OrdersComponent implements OnInit {
     this.search();
   }
 
+  filterComponent = viewChild(OrdersFilterComponent);
   search() {
     this.loading.set(true);
     this.error.set('');
 
-    this.ordersService.getAll()
+   const filter = this.filterComponent()?.filter() ?? null;
+   this.ordersService.queryOrders(filter)
+
       .pipe(delay(1000))          // TODO: privremeno, samo da se vidi animacija
       .subscribe({
         next: (data) => {

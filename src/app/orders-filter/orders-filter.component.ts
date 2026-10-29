@@ -32,7 +32,7 @@ export class OrdersFilterComponent {
   protected readonly strategyId = signal<number | null>(null);
 
   /** Sve vrednosti zajedno; roditelj ga čita na Search */
-  readonly filter = computed<OrdersFilter>(() => ({
+  public filter = computed<OrdersFilter>(() => ({
     sid: this.sid(),
     orderId: this.orderId(),
     startDate: this.startDate(),
