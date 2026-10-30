@@ -5,109 +5,122 @@
         type="button"
         class="tab"
         [class.tabActive]="tab() === 'order'"
-        (click)="tab.set('order')"> Order</button>
-      <button type="button" class="tab" [class.tabActive]="tab() === 'allocations'"
-              (click)="tab.set('allocations')">Allocations ({{ allocations().length }})</button>
+        (click)="tab.set('order')"
+      >
+        Order
+      </button>
+      <button
+        type="button"
+        class="tab"
+        [class.tabActive]="tab() === 'allocations'"
+        (click)="tab.set('allocations')"
+      >
+        Allocations ({{ allocations().length }})
+      </button>
     </div>
 
-   
-    @if(tab() === 'order'){ 
-    <div class="fields">
-      <!-- Security: kucate sid, lista nudi poklapanja, izbor upisuje description -->
-      <div class="securityControlPanel">
-        <label class="securityLabel" for="security">Security</label>
+    @if (tab() === "order") {
+      <div class="fields">
+        <!-- Security: kucate sid, lista nudi poklapanja, izbor upisuje description -->
+        <div class="securityControlPanel">
+          <label class="securityLabel" for="security">Security</label>
 
-        <div class="securityCombo">
-          <input
-            id="security"
-            #security
-            class="control"
-            type="text"
-            placeholder="Search by SID…"
-            autocomplete="off"
-            cdkFocusInitial
-            [disabled]="!editable()"
-            [value]="securityText()"
-            (input)="searchSecurity(security.value)"
-            (click)="securityOpen.set(true)"
-            (blur)="securityOpen.set(false)"
-            (keydown.enter)="pickFirstSecurity($event)"
-            (keydown.escape)="closeSecurityList($event)"
-          />
+          <div class="securityCombo">
+            <input
+              id="security"
+              #security
+              class="control"
+              type="text"
+              placeholder="Search by SID…"
+              autocomplete="off"
+              cdkFocusInitial
+              [disabled]="!editable()"
+              [value]="securityText()"
+              (input)="searchSecurity(security.value)"
+              (click)="securityOpen.set(true)"
+              (blur)="securityOpen.set(false)"
+              (keydown.enter)="pickFirstSecurity($event)"
+              (keydown.escape)="closeSecurityList($event)"
+            />
 
-          <!-- TODO: otvaranje prozora hartije; do tada disabled -->
-          <button type="button" class="securityButton" aria-label="Open security" disabled>
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 12 12"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.4"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
+            <!-- TODO: otvaranje prozora hartije; do tada disabled -->
+            <button
+              type="button"
+              class="securityButton"
+              aria-label="Open security"
+              disabled
             >
-              <path d="M4.5 2.5h5v5" />
-              <path d="M9.5 2.5l-7 7" />
-            </svg>
-          </button>
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M4.5 2.5h5v5" />
+                <path d="M9.5 2.5l-7 7" />
+              </svg>
+            </button>
 
-          @if (securityOpen()) {
-            <!-- mousedown + preventDefault: polje ne gubi fokus pre izbora -->
-            <ul class="dropdown">
-              @for (s of securityMatches(); track s.sid) {
-                <li (mousedown)="$event.preventDefault(); pickSecurity(s)">
-                  <span class="dd-sid">{{ s.sid }}</span>
-                  <span>{{ s.description }}</span>
-                </li>
-              } @empty {
-                <li class="dd-empty">No match</li>
-              }
-            </ul>
-          }
+            @if (securityOpen()) {
+              <!-- mousedown + preventDefault: polje ne gubi fokus pre izbora -->
+              <ul class="dropdown">
+                @for (s of securityMatches(); track s.sid) {
+                  <li (mousedown)="$event.preventDefault(); pickSecurity(s)">
+                    <span class="dd-sid">{{ s.sid }}</span>
+                    <span>{{ s.description }}</span>
+                  </li>
+                } @empty {
+                  <li class="dd-empty">No match</li>
+                }
+              </ul>
+            }
+          </div>
         </div>
+
+        <label class="field">
+          <span class="label">Trade Date</span>
+          <input class="control" type="date" formControlName="tradeDate" />
+        </label>
+
+        <label class="field">
+          <span class="label">Quantity</span>
+          <input class="control" type="number" formControlName="quantity" />
+        </label>
+
+        <label class="field">
+          <span class="label">Manager</span>
+          <select class="control" formControlName="managerId">
+            <option [ngValue]="0" disabled>Select manager</option>
+            @for (m of lookups.managers(); track m.id) {
+              <option [ngValue]="m.id">{{ m.display }}</option>
+            }
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="label">Strategy</span>
+          <select class="control" formControlName="strategyId">
+            <option [ngValue]="0" disabled>Select strategy</option>
+            @for (s of lookups.strategies(); track s.id) {
+              <option [ngValue]="s.id">{{ s.display }}</option>
+            }
+          </select>
+        </label>
       </div>
-
-      <label class="field">
-        <span class="label">Trade Date</span>
-        <input class="control" type="date" formControlName="tradeDate" />
-      </label>
-
-      <label class="field">
-        <span class="label">Quantity</span>
-        <input class="control" type="number" formControlName="quantity" />
-      </label>
-
-      <label class="field">
-        <span class="label">Manager</span>
-        <select class="control" formControlName="managerId">
-          <option [ngValue]="0" disabled>Select manager</option>
-          @for (m of lookups.managers(); track m.id) {
-            <option [ngValue]="m.id">{{ m.display }}</option>
-          }
-        </select>
-      </label>
-
-      <label class="field">
-        <span class="label">Strategy</span>
-        <select class="control" formControlName="strategyId">
-          <option [ngValue]="0" disabled>Select strategy</option>
-          @for (s of lookups.strategies(); track s.id) {
-            <option [ngValue]="s.id">{{ s.display }}</option>
-          }
-        </select>
-      </label>
-    </div>
-  }
-  @else{
-
-     <div class="allocations">
+    } @else {
+      <div class="allocations">
         <div class="title">Allocations</div>
-       <app-allocation-grid [(allocations)]="allocations" [editable]="editable()" />
-    </div>
-
-  }
+        <app-allocation-grid
+          [(allocations)]="allocations"
+          [editable]="editable()"
+        />
+      </div>
+    }
     <footer class="footer">
       <!-- Book levo; aktivan za novi nalog i u Edit režimu -->
       <button type="submit" class="btn" [disabled]="saving() || !editable()">
@@ -115,7 +128,12 @@
       </button>
 
       <!-- Edit: aktivan samo kad je forma readonly (snimljen/postojeći nalog) -->
-      <button type="button" class="btn" [disabled]="editable()" (click)="edit()">
+      <button
+        type="button"
+        class="btn"
+        [disabled]="editable()"
+        (click)="edit()"
+      >
         Edit
       </button>
 

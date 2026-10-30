@@ -86,7 +86,7 @@ export class OrdersComponent implements OnInit {
    const filter = this.filterComponent()?.filter() ?? null;
    this.ordersService.queryOrders(filter)
 
-      .pipe(delay(1000))          // TODO: privremeno, samo da se vidi animacija
+      .pipe(delay(100))          // TODO: privremeno, samo da se vidi animacija
       .subscribe({
         next: (data) => {
           this.orders.set(data);

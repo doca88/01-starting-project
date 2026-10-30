@@ -1,0 +1,55 @@
+/* lista | traka za skupljanje */
+:host {
+  display: flex;
+  background: #181818;
+  border-right: 1px solid #3c3c3c;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 6px;
+}
+
+.title {
+  padding: 2px 8px 6px;
+  color: #9a9a9a;
+  font-size: 11px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #cfcfcf;
+  font: inherit;
+  cursor: pointer;
+}
+
+.item:hover {
+  background: #2a2a2a;
+}
+
+.item.active {
+  background: #d8364a;
+  color: #ffffff;
+}
+
+.toggle {
+  width: 14px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #9a9a9a;
+  cursor: pointer;
+}
+
+.toggle:hover {
+  background: #2a2a2a;
+}

@@ -5,17 +5,20 @@ import { LoadingComponent } from './loading/loading.component';
 import { Order } from './common/models';
 import { WindowService } from './common/window/window.service';
 import { OrderViewModel } from './order/order.view-model';
+import { Module, ModulesMenuComponent } from './modules-menu/modules-menu.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [OrdersComponent, AllocationsComponent, LoadingComponent],
+  imports: [OrdersComponent, AllocationsComponent, LoadingComponent, ModulesMenuComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
 export class AppComponent {
   private windows = inject(WindowService);
 
+  module = signal<Module>('orders');
+  
   selectedOrder = signal<Order | null>(null);
 
   async newOrder(orders: OrdersComponent) {

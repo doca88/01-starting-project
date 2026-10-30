@@ -1,22 +1,29 @@
+<app-modules-menu [(module)]="module" />
 
-<div class="content">
-  <app-orders
-    #orders
-    class="orders"
-    (orderSelected)="selectedOrder.set($event)" />
+<div class="page">
+  @if (module() === 'orders') {
+    <div class="content">
+      <app-orders
+        #orders
+        class="orders"
+        (orderSelected)="selectedOrder.set($event)" />
 
-  <app-allocations
-    class="allocations"
-    [orderId]="selectedOrder()?.orderId ?? null"
-    [allocations]="selectedOrder()?.allocations ?? []" />
+      <app-allocations
+        class="allocations"
+        [orderId]="selectedOrder()?.orderId ?? null"
+        [allocations]="selectedOrder()?.allocations ?? []" />
 
-  @if (orders.loading()) {
-    <app-loading text="Loading orders" />
+      @if (orders.loading()) {
+        <app-loading text="Loading orders" />
+      }
+    </div>
+
+    <div class="footer">
+      <button class="btn btn-ghost" (click)="newOrder(orders)">New Order</button>
+      <button class="btn" (click)="orders.search()" [disabled]="orders.loading()">Search</button>
+      <button class="btn" (click)="orders.clear()" [disabled]="orders.loading()">Clear</button>
+    </div>
+  } @else {
+    <div class="placeholder">Coming soon</div>
   }
-</div>
-
-<div class="footer">
-  <button class="btn btn-ghost" (click)="newOrder(orders)">New Order</button>
-  <button class="btn" (click)="orders.search()" [disabled]="orders.loading()">Search</button>
-  <button class="btn" (click)="orders.clear()" [disabled]="orders.loading()">Clear</button>
 </div>

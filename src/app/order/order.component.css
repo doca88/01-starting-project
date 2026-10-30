@@ -10,10 +10,11 @@
   --focus: #7a7a7a;           /* ivica fokusiranog polja, svetlija od obične */
   --list-bg: #2b2b2b;         /* pozadina padajuće liste */
   --hover-bg: #4a4a4a;        /* pozadina stavke pod mišem */
+  --radius: 4px;              /* zaobljenje svih kontrola, na jednom mestu */
 
   display: flex;              /* vertikalni StackPanel... */
   flex-direction: column;     /* ...odozgo nadole */
-  height: 300px;         
+  height: 300px;
 }
 
 /* ===== tabs ===== */
@@ -22,7 +23,7 @@
   height: 28px;
   padding: 0 14px;            /* razmak teksta od ivica taba */
   border: none;               /* skida default ivicu dugmeta */
-  border-radius: 3px 3px 0 0; /* zaobljeni samo gornji uglovi */
+  border-radius: var(--radius) var(--radius) 0 0;  /* zaobljeni samo gornji uglovi */
   background: transparent;    /* neaktivan tab: bez pozadine */
   color: #cfcfcf;             /* neaktivan tab: prigušen tekst */
   font: inherit;              /* dugme ne nasleđuje font samo */
@@ -106,6 +107,7 @@
   background: var(--control-bg);
   color: #ffffff;
   border: 1px solid var(--control-border);
+  border-radius: var(--radius);  /* isto i za input i za select (gazi browserov radius selecta) */
   color-scheme: dark;         /* nativni delovi (kalendar, lista selecta) tamni */
 }
 
@@ -128,7 +130,7 @@
   {
     background: var(--list-bg);
     border: 1px solid var(--control-border);
-    border-radius: 4px;
+    border-radius: var(--radius);
     padding: 4px 0;
   }
 
@@ -155,7 +157,7 @@
   height: 26px;
   padding: 0;                 /* skida default padding */
   border: 1px solid var(--control-border);
-  border-radius: 3px;
+  border-radius: var(--radius);
   background: var(--control-bg);
   color: #cfcfcf;             /* boja strelice (currentColor) */
   cursor: pointer;
@@ -177,7 +179,7 @@
   list-style: none;           /* bez tačkica */
   background: var(--list-bg);
   border: 1px solid var(--control-border);
-  border-radius: 4px;
+  border-radius: var(--radius);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   color-scheme: dark;         /* tamni scrollbar */
 }
@@ -211,7 +213,7 @@
 .btn
 {
   height: 28px;
-  border-radius: 3px;
+  border-radius: var(--radius);
   background: var(--accent);
   color: #ffffff;
   font-weight: 600;           /* SemiBold */
