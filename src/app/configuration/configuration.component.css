@@ -1,0 +1,73 @@
+/* host: sadržaj | lista desno; uzima ostatak širine posle menija modula */
+:host
+{
+  flex: 1;
+  min-width: 0;
+  display: flex;
+}
+
+/* levi deo: filteri gore, grid u sredini, dugmad dole */
+.main
+{
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+}
+
+.grid
+{
+  flex: 1;                    /* grid uzima svu preostalu visinu */
+  border: 1px dashed #555555; /* PRIVREMENO: da se vidi oblast */
+}
+
+/* dugmad desno, kao u Orders; izgled daje globalno .btn pravilo */
+.footer
+{
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+/* ===== desna lista, isti izgled kao meni modula ===== */
+.create
+{
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 160px;
+  padding: 8px 6px;
+  background: #181818;
+  border-left: 1px solid #3c3c3c;
+}
+
+.title
+{
+  padding: 2px 8px 6px;
+  color: #9a9a9a;
+  font-size: 11px;
+}
+
+.item
+{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #cfcfcf;
+  font: inherit;
+  cursor: pointer;
+}
+
+.item:hover
+{
+  background: #2a2a2a;        /* IsMouseOver */
+  color: #ffffff;
+}

@@ -1,0 +1,88 @@
+/* forma: polje gore, dugmad dole */
+.form
+{
+  display: flex;
+  flex-direction: column;
+}
+
+/* labela | input */
+.field
+{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 12px;
+}
+
+.label
+{
+  white-space: nowrap;
+}
+
+.control
+{
+  flex: 1;
+  height: 26px;
+  box-sizing: border-box;
+  padding: 0 6px;
+  font: inherit;
+  background: #333333;
+  color: #ffffff;
+  border: 1px solid #555555;
+  border-radius: 4px;
+  color-scheme: dark;
+}
+
+.control:focus
+{
+  outline: none;
+  border-color: #7a7a7a;
+}
+
+/* greška sa servera, između polja i dugmadi */
+.error
+{
+  margin: 0 12px;
+  padding: 6px 8px;
+  border: 1px solid #d8364a;
+  border-radius: 4px;
+  color: #ff8a96;             /* svetlija crvena, čitljiva na tamnoj pozadini */
+}
+
+/* Save levo, Close desno, kao Book i Close u Order formi */
+.footer
+{
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+}
+
+/* dugmad kao u Order formi */
+.btn
+{
+  min-width: 80px;
+  height: 28px;
+  border: none;
+  border-radius: 4px;
+  background: #d8364a;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover:not(:disabled)
+{
+  background: #e04a5d;        /* IsMouseOver */
+}
+
+.btn:active:not(:disabled)
+{
+  background: #b82d3e;        /* IsPressed */
+}
+
+.btn:disabled
+{
+  opacity: 0.45;              /* IsEnabled=False */
+  cursor: not-allowed;
+}

@@ -6,11 +6,12 @@ import { Order } from './common/models';
 import { WindowService } from './common/window/window.service';
 import { OrderViewModel } from './order/order.view-model';
 import { Module, ModulesMenuComponent } from './modules-menu/modules-menu.component';
+import { ConfigurationComponent } from './configuration/configuration.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [OrdersComponent, AllocationsComponent, LoadingComponent, ModulesMenuComponent],
+  imports: [OrdersComponent, AllocationsComponent, LoadingComponent, ModulesMenuComponent, ConfigurationComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })

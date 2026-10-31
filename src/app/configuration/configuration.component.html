@@ -1,0 +1,32 @@
+<div class="main">
+  <div class="filters">Filters</div>
+  <div class="grid">Grid</div>
+  <div class="footer">
+    <button type="button" class="btn">Search</button>
+    <button type="button" class="btn">Clear</button>
+  </div>
+</div>
+
+<nav class="create">
+  <span class="title">CREATE NEW</span>
+
+  <button type="button" class="item" (click)="openCreate('manager')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M19 8v6M22 11h-6" />
+    </svg>
+    <span>Manager</span>
+  </button>
+
+  <button type="button" class="item" (click)="openCreate('strategy')">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="6" />
+      <circle cx="12" cy="12" r="2" />
+    </svg>
+    <span>Strategy</span>
+  </button>
+</nav>

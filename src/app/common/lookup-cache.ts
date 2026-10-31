@@ -2,14 +2,17 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs';
 import { Manager, Security, Strategy } from './models';
+import { NotificationService, Notifications } from './notification.service';
 
 /**
  * Kes za lookup liste (manageri, strategije, hartije).
  * Ucitava se jednom, pri prvom koriscenju; posle toga svi citaju iz memorije.
+ * Promene (od bilo kog korisnika) stizu preko SignalR-a i osvezavaju samo tu listu.
  */
 @Injectable({ providedIn: 'root' })
 export class LookupCache {
   private http = inject(HttpClient);
+  private notifications = inject(NotificationService);
 
   readonly managers = signal<Manager[]>([]);
   readonly strategies = signal<Strategy[]>([]);
@@ -21,18 +24,36 @@ export class LookupCache {
 
   constructor() {
     this.refresh();   // servis se pravi pri prvom inject-u -> tada se i ucita
+
+    // root servis zivi koliko i aplikacija, pa odjava nije potrebna
+    this.notifications.on(Notifications.ManagersChanged, () => this.loadManagers());
+    this.notifications.on(Notifications.StrategiesChanged, () => this.loadStrategies());
+    this.notifications.on(Notifications.SecuritiesChanged, () => this.loadSecurities());
   }
 
-  /** ponovo ucitaj sa servera (npr. posle dodavanja novog managera) */
+  /** ponovo ucitaj sve liste sa servera */
   refresh() {
+    this.loadManagers();
+    this.loadStrategies();
+    this.loadSecurities();
+  }
+
+  loadManagers() {
     this.load<Manager>('/managers/query', (m) => m.display).subscribe({
       next: (list) => this.managers.set(list),
       error: (e) => console.error('managers load failed', e),
     });
+  }
+
+  loadStrategies() {
+    
     this.load<Strategy>('/strategies/query', (s) => s.display).subscribe({
       next: (list) => this.strategies.set(list),
       error: (e) => console.error('strategies load failed', e),
     });
+  }
+
+  loadSecurities() {
     this.load<Security>('/securities/query', (s) => s.description).subscribe({
       next: (list) => this.securities.set(list),
       error: (e) => console.error('securities load failed', e),

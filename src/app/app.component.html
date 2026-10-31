@@ -23,7 +23,11 @@
       <button class="btn" (click)="orders.search()" [disabled]="orders.loading()">Search</button>
       <button class="btn" (click)="orders.clear()" [disabled]="orders.loading()">Clear</button>
     </div>
-  } @else {
+  } 
+  @else if (module() === 'configuration') {
+    <app-configuration />
+  }
+  @else {
     <div class="placeholder">Coming soon</div>
   }
 </div>
