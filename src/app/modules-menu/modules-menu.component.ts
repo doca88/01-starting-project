@@ -1,6 +1,6 @@
 import { Component, model, signal } from '@angular/core';
 
-export type Module = 'orders' | 'securities' | 'configuration';
+export type Module = 'orders' | 'securities' | 'configuration' |'dashboard';
 
 @Component({
   selector: 'app-modules-menu',

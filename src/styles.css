@@ -103,3 +103,16 @@ ag-grid-angular {
 .cdk-dialog-container:focus {
   outline: none;
 }
+
+/* cela aplikacija je tamna: nativne kontrole (scrollbar, liste, kalendar) u tamnoj varijanti */
+:root
+{
+  color-scheme: dark;
+}
+
+/* tanak, diskretan scrollbar svuda: siva ručka, providna staza */
+*
+{
+  scrollbar-width: thin;
+  scrollbar-color: #555555 transparent;
+}

@@ -1,0 +1,64 @@
+<div class="toolbar">
+  <span class="heading">Manager quantity</span>
+
+  <label class="field">
+    <span>Manager</span>
+    <select class="control" [ngModel]="managerId()" (ngModelChange)="load($event)">
+      <option [ngValue]="null" disabled>Select manager</option>
+      @for (m of lookups.managers(); track m.id) {
+        <option [ngValue]="m.id">{{ m.display }}</option>
+      }
+    </select>
+  </label>
+</div>
+
+<div class="kpis">
+  <div class="kpi">
+    <span class="kpi-label">Total quantity</span>
+    <span class="kpi-value">{{ total() | number: '1.2-2' }}</span>
+  </div>
+  <div class="kpi">
+    <span class="kpi-label">Orders</span>
+    <span class="kpi-value">{{ count() }}</span>
+  </div>
+  <div class="kpi">
+    <span class="kpi-label">Avg per order</span>
+    <span class="kpi-value">{{ avg() | number: '1.2-2' }}</span>
+  </div>
+  <div class="kpi">
+    <span class="kpi-label">Largest order</span>
+    <span class="kpi-value">{{ largest() | number: '1.2-2' }}</span>
+  </div>
+</div>
+
+<div class="charts">
+  <section class="card">
+    <div class="card-title">Quantity by trade date</div>
+    <ag-charts class="chart" [options]="dayChart()" />
+  </section>
+
+  <section class="card">
+    <div class="card-title">Cumulative quantity</div>
+    <ag-charts class="chart" [options]="cumulativeChart()" />
+  </section>
+
+  <section class="card">
+    <div class="card-title">Allocation coverage</div>
+    <ag-charts class="chart" [options]="allocationChart()" />
+  </section>
+
+  <section class="card">
+    <div class="card-title">By strategy</div>
+    <ag-charts class="chart" [options]="strategyChart()" />
+  </section>
+
+  <section class="card">
+    <div class="card-title">Top securities</div>
+    <ag-charts class="chart" [options]="securityChart()" />
+  </section>
+
+  <section class="card">
+    <div class="card-title">Order size distribution</div>
+    <ag-charts class="chart" [options]="sizeChart()" />
+  </section>
+</div>
