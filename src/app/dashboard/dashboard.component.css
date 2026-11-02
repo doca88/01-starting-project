@@ -9,6 +9,7 @@
   padding: 8px;
   overflow: auto;
   color: #e0e0e0;
+  font-size: 13px;            /* nasleđuju je labela i dropdown */
 }
 
 /* naslov levo, izbor managera desno */

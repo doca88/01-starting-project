@@ -1,9 +1,30 @@
 <div class="main">
-  <div class="filters">Filters</div>
-  <div class="grid">Grid</div>
+  <div class="filters">
+    <label class="field">
+      <span>Type</span>
+      <select class="control" [(ngModel)]="type">
+        <option value="manager">Manager</option>
+        <option value="strategy">Strategy</option>
+      </select>
+    </label>
+
+    <label class="field">
+      <span>Name</span>
+      <input class="control" type="text" placeholder="contains…" autocomplete="off"
+             [(ngModel)]="name" (keydown.enter)="search()" />
+    </label>
+  </div>
+
+  <ag-grid-angular
+    class="grid"
+    [rowData]="rows()"
+    [columnDefs]="columns"
+    [getContextMenuItems]="getContextMenuItems"
+    (rowDoubleClicked)="onRowDoubleClicked($event)" />
+
   <div class="footer">
-    <button type="button" class="btn">Search</button>
-    <button type="button" class="btn">Clear</button>
+    <button type="button" class="btn" (click)="search()">Search</button>
+    <button type="button" class="btn" (click)="clear()">Clear</button>
   </div>
 </div>
 

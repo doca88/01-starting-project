@@ -15,10 +15,11 @@ import { LookupService } from './lookup.service';
 export class LookupComponent {
   private readonly lookupService = inject(LookupService);
 
-  /** DataContext prozora: tip i naslov */
+  /** DataContext prozora: tip, naslov i (za izmenu) postojeći red */
   protected readonly vm = injectViewModel<LookupViewModel>();
 
-  protected readonly name = signal('');
+  /** kod izmene polje počinje sa postojećim imenom */
+  protected readonly name = signal(this.vm.item?.display ?? '');
 
   /** true dok traje snimanje: Save je tada onemogućen (nema duplog snimanja) */
   protected readonly saving = signal(false);
@@ -30,7 +31,12 @@ export class LookupComponent {
     this.saving.set(true);
     this.error.set('');
 
-    this.lookupService.create(this.vm.type, this.name().trim()).subscribe({
+    const name = this.name().trim();
+    const request = this.vm.item
+      ? this.lookupService.update(this.vm.type, this.vm.item.id, name)   // izmena
+      : this.lookupService.create(this.vm.type, name);                   // novi
+
+    request.subscribe({
       next: () => this.vm.close(true),        // pozivalac dobija true = snimljeno
       error: (err) => {
         this.error.set(`${err.status} ${err.statusText}`);

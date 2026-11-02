@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  font-size: 13px;   /* ista veličina kao grid; nasleđuje je i filter traka */
 }
 
 .grid {
