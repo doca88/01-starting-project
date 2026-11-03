@@ -60,3 +60,40 @@
   font-weight: 600;
   letter-spacing: 0.15em;
 }
+
+/* logout dole levo, ispod menija */
+.logout {
+  position: fixed;
+  left: 8px;
+  bottom: 8px;
+}
+
+/* nisi ulogovan: ceo ekran, kartica na sredini */
+.signed-out {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 28px 24px;
+  background: #262626;
+  border: 1px solid #3c3c3c;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.card p {
+  margin: 0;
+  color: #9a9a9a;
+}
+
+.card .btn {
+  width: 100%;
+  padding: 8px;
+}

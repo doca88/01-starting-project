@@ -1,36 +1,47 @@
-<app-modules-menu [(module)]="module" />
+@if (auth.isLoggedIn()) {
+  <app-modules-menu [(module)]="module" />
+  <button class="btn btn-ghost logout" (click)="auth.logout()">Logout</button>
 
-<div class="page">
-  @if (module() === 'orders') {
-    <div class="content">
-      <app-orders
-        #orders
-        class="orders"
-        (orderSelected)="selectedOrder.set($event)" />
+  <div class="page">
+    @if (module() === 'orders') {
+      <div class="content">
+        <app-orders
+          #orders
+          class="orders"
+          (orderSelected)="selectedOrder.set($event)" />
 
-      <app-allocations
-        class="allocations"
-        [orderId]="selectedOrder()?.orderId ?? null"
-        [allocations]="selectedOrder()?.allocations ?? []" />
+        <app-allocations
+          class="allocations"
+          [orderId]="selectedOrder()?.orderId ?? null"
+          [allocations]="selectedOrder()?.allocations ?? []" />
 
-      @if (orders.loading()) {
-        <app-loading text="Loading orders" />
-      }
+        @if (orders.loading()) {
+          <app-loading text="Loading orders" />
+        }
+      </div>
+
+      <div class="footer">
+        <button class="btn btn-ghost" (click)="newOrder(orders)">New Order</button>
+        <button class="btn" (click)="orders.search()" [disabled]="orders.loading()">Search</button>
+        <button class="btn" (click)="orders.clear()" [disabled]="orders.loading()">Clear</button>
+      </div>
+    }
+    @else if (module() === 'configuration') {
+      <app-configuration />
+    }
+    @else if (module() === 'dashboard') {
+      <app-dashboard />
+    }
+    @else {
+      <div class="placeholder">Coming soon</div>
+    }
+  </div>
+} @else {
+  <div class="signed-out">
+    <div class="card">
+      <div class="app-name">SECURITY MASTER</div>
+      <p>You are not logged in.</p>
+      <button class="btn" (click)="openLogin()">Login</button>
     </div>
-
-    <div class="footer">
-      <button class="btn btn-ghost" (click)="newOrder(orders)">New Order</button>
-      <button class="btn" (click)="orders.search()" [disabled]="orders.loading()">Search</button>
-      <button class="btn" (click)="orders.clear()" [disabled]="orders.loading()">Clear</button>
-    </div>
-  } 
-  @else if (module() === 'configuration') {
-    <app-configuration />
-  }
-  @else if (module() === 'dashboard') {
-    <app-dashboard />
-  }
-  @else {
-    <div class="placeholder">Coming soon</div>
-  }
-</div>
+  </div>
+}
