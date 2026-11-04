@@ -248,3 +248,8 @@
   flex: 1;                                  /* dete forme: uzima ostatak visine, gura footer na dno */
   padding: 8px;                             /* isti razmak od ivica kao .fields */
 }
+
+.control.Error
+{
+  border-color: #ff6b7a;
+}

@@ -7,6 +7,7 @@ import { WindowFrameComponent } from '../common/window/window-frame.component';
 import { OrderViewModel } from './order.view-model';
 import { AllocationGridComponent } from '../allocation-grid/allocation-grid.component';
 import { Allocation, Order, Security } from '../common/models';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-order-form',
@@ -147,7 +148,7 @@ export class OrderComponent {
    * Posle snimanja forma je ponovo readonly, a Book onemogućen do sledećeg Edit-a.
    */
   book() {
-    if (this.saving() || !this.editable()) return;   // i Enter u formi ne sme da snimi readonly nalog
+     if (this.saving() || !this.editable() || this.invalid()) return;
 
     const v = this.form.getRawValue();
     this.saving.set(true);
@@ -179,4 +180,60 @@ export class OrderComponent {
   private copyAllocations(): Allocation[] {
     return structuredClone(this.orderViewModel.order()?.allocations ?? []);
   }
-  }
+
+    /** suma quantity svih alokacija */
+allocatedQty = computed(() =>
+  this.allocations().reduce((sum, a) => sum + a.quantity, 0)
+
+);
+
+/** Quantity iz forme kao signal */
+readonly quantity = toSignal(this.form.controls.quantity.valueChanges, {
+  initialValue: this.form.controls.quantity.value,
+});
+
+/** greška u Quantity: mora biti > 0 i, ako ima alokacija, jednak njihovoj sumi */
+readonly qtyMismatch = computed(() => {
+  if (!this.editable()) return false;           // readonly nalog nikad nije crven
+
+  const qty = this.quantity() ?? 0;             // prazno polje daje null
+  if (!(qty > 0)) return true;                  // 0, negativno ili prazno
+
+  return Math.round(this.allocatedQty() * 100) !== Math.round(qty * 100);
+});
+
+/** sid iz forme kao signal (0 = ništa nije izabrano iz liste) */
+readonly sid = toSignal(this.form.controls.sid.valueChanges, {
+  initialValue: this.form.controls.sid.value,
+});
+
+/** greška: u Edit režimu (ili novom nalogu) hartija nije izabrana */
+readonly securityMissing = computed(() => this.editable() && !this.sid());
+
+/** managerId i tradeDate iz forme kao signali */
+readonly managerId = toSignal(this.form.controls.managerId.valueChanges, {
+  initialValue: this.form.controls.managerId.value,
+});
+readonly managerMissing = computed(() => this.editable() && !this.managerId());
+
+readonly tradeDate = toSignal(this.form.controls.tradeDate.valueChanges, {
+  initialValue: this.form.controls.tradeDate.value,
+});
+
+/** greške: manager nije izabran (0), datum je prazan ('') */
+
+readonly tradeDateMissing = computed(() => this.editable() && !this.tradeDate());
+
+/** strategyId iz forme kao signal */
+readonly strategyId = toSignal(this.form.controls.strategyId.valueChanges, {
+  initialValue: this.form.controls.strategyId.value,
+});
+
+/** greška: strategija nije izabrana (0) */
+readonly strategyMissing = computed(() => this.editable() && !this.strategyId());
+
+readonly invalid = computed(() =>
+  this.qtyMismatch() || this.securityMissing() || this.tradeDateMissing() ||
+  this.managerMissing() || this.strategyMissing()
+);
+}

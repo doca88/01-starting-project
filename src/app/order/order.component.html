@@ -26,7 +26,7 @@
           <label class="securityLabel" for="security">Security</label>
 
           <div class="securityCombo">
-            <input
+            <input [class.Error]="securityMissing()"
               id="security"
               #security
               class="control"
@@ -84,17 +84,17 @@
 
         <label class="field">
           <span class="label">Trade Date</span>
-          <input class="control" type="date" formControlName="tradeDate" />
+          <input class="control" type="date" formControlName="tradeDate" [class.Error]="tradeDateMissing  ()"/>
         </label>
 
         <label class="field">
-          <span class="label">Quantity</span>
-          <input class="control" type="number" formControlName="quantity" />
+         <span class="label">Quantity</span>
+          <input class="control" type="number" formControlName="quantity" [class.Error]="qtyMismatch()" />
         </label>
 
         <label class="field">
           <span class="label">Manager</span>
-          <select class="control" formControlName="managerId">
+          <select class="control" formControlName="managerId" [class.Error]="managerMissing()">
             <option [ngValue]="0" disabled>Select manager</option>
             @for (m of lookups.managers(); track m.id) {
               <option [ngValue]="m.id">{{ m.display }}</option>
@@ -104,7 +104,7 @@
 
         <label class="field">
           <span class="label">Strategy</span>
-          <select class="control" formControlName="strategyId">
+          <select class="control" formControlName="strategyId" [class.Error]="strategyMissing()">
             <option [ngValue]="0" disabled>Select strategy</option>
             @for (s of lookups.strategies(); track s.id) {
               <option [ngValue]="s.id">{{ s.display }}</option>
@@ -118,12 +118,13 @@
         <app-allocation-grid
           [(allocations)]="allocations"
           [editable]="editable()"
+          [qtyMismatch]="qtyMismatch()"
         />
       </div>
     }
     <footer class="footer">
       <!-- Book levo; aktivan za novi nalog i u Edit režimu -->
-      <button type="submit" class="btn" [disabled]="saving() || !editable()">
+      <button type="submit" class="btn" [disabled]="saving() || !editable() || invalid()">
         Book
       </button>
 

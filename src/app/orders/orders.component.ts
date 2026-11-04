@@ -7,10 +7,7 @@ import { WindowService } from '../common/window/window.service';
 import { OrderViewModel } from '../order/order.view-model';
 import { delay } from 'rxjs';
 import { OrdersFilterComponent } from '../orders-filter/orders-filter.component';
-
-/** 1093.48 -> "1,093.48" */
-const formatQty = (value: number | null | undefined) =>
-  value?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? '';
+import { formatQty } from '../common/utilities';
 
 @Component({
   selector: 'app-orders',

@@ -2,10 +2,7 @@ import { Component, input } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef } from 'ag-grid-community';
 import { Allocation } from '../common/models';
-
-/** 1093.48 -> "1,093.48" */
-const formatQty = (value: number | null | undefined) =>
-  value?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? '';
+import { formatQty } from '../common/utilities';
 
 @Component({
   selector: 'app-allocations',

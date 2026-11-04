@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, model, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, model, signal } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
   CellValueChangedEvent,
@@ -16,33 +16,16 @@ import {
 
 import { Allocation } from '../common/models';
 import { LookupCache } from '../common/lookup-cache';
-
-/** Input red ima id 0, koji nikad nema ni pravi (> 0) ni novi (< 0) red */
-const INPUT_ROW_ID = 0;
+import { formatQty } from '../common/utilities';
+import { managerFormatter } from '../common/utilities';
+import { textFormatter } from '../common/utilities';
+import { idFormatter } from '../common/utilities';
+import { qtyFormatter } from '../common/utilities';
+import { isInputRow } from '../common/utilities';
 
 function emptyRow(): Allocation {
-  return { allocationId: INPUT_ROW_ID, orderId: 0, managerId: 0, strategyId: 0, quantity: 0 } as Allocation;
+  return { allocationId: 0, orderId: 0, managerId: 0, strategyId: 0, quantity: 0 } as Allocation;
 }
-
-function isInputRow(a: Allocation | null | undefined): boolean {
-  return a?.allocationId === INPUT_ROW_ID;
-}
-
-/** Input red pokazuje "New allocation…" dok manager nije izabran */
-const managerFormatter = (p: ValueFormatterParams<Allocation, string>) =>
-  isInputRow(p.data) && !p.value ? 'New allocation…' : p.value ?? '';
-
-const textFormatter = (p: ValueFormatterParams<Allocation, string>) =>
-  p.value ?? '';
-
-/** 0 se ne prikazuje (input red pre unosa; prava alokacija ima quantity >= 1) */
-const qtyFormatter = (p: ValueFormatterParams<Allocation, number>) =>
-  !p.value ? '' : p.value.toLocaleString('en-US');
-
-const idFormatter = (p: ValueFormatterParams<Allocation, number>) => {
-  if (isInputRow(p.data)) return '';                                  // input red još nije alokacija
-  return p.value != null && p.value > 0 ? String(p.value) : '0';     // novi, nesnimljen red: 0
-};
 
 @Component({
   selector: 'app-allocation-grid',
@@ -63,6 +46,8 @@ export class AllocationGridComponent {
 
   /** true kad je order forma u Edit režimu (ili je nalog nov) */
   readonly editable = input(false);
+
+  readonly qtyMismatch = input(false);
 
   /** Prazan red za unos; nije u allocations dok se ne popuni */
   private readonly inputRow = signal(emptyRow());
@@ -90,6 +75,7 @@ export class AllocationGridComponent {
       cellEditor: 'agSelectCellEditor',
       cellEditorParams: () => ({ values: this.lookups.managers().map(m => m.display) }),
       valueSetter: p => this.setManager(p),
+      cellClassRules: { 'cell-error': p => this.missing(p.data, p.data?.managerId) },
     },
     {
       field: 'strategy.display',
@@ -100,6 +86,7 @@ export class AllocationGridComponent {
       cellEditor: 'agSelectCellEditor',
       cellEditorParams: () => ({ values: this.lookups.strategies().map(s => s.display) }),
       valueSetter: p => this.setStrategy(p),
+      cellClassRules: { 'cell-error': p => this.missing(p.data, p.data?.strategyId) },
     },
     {
       field: 'quantity',
@@ -110,7 +97,9 @@ export class AllocationGridComponent {
       maxWidth: 140,
       editable: () => this.editable(),
       cellEditor: 'agNumberCellEditor',
-      cellEditorParams: { min: 1, precision: 0 },
+      cellClassRules: {
+        'cell-error': p => this.missing(p.data, p.data?.quantity) || (this.qtyMismatch() && !isInputRow(p.data)),
+      }
     },
   ];
 
@@ -149,20 +138,25 @@ export class AllocationGridComponent {
     if (this.editable() && this.allocations().length === 0) this.editInputRow();
   }
 
-  /** Kad se input red popuni (manager, strategija, quantity), postaje prava alokacija, a ispod nje novi prazan */
-  onCellValueChanged(e: CellValueChangedEvent<Allocation>) {
-    if (!isInputRow(e.data)) return;
-
-    const row = e.data;
-    if (!row.managerId || !row.strategyId || !(row.quantity > 0)) return;   // još nije popunjen
-
-    const list = this.allocations();
-    const id = Math.min(0, ...list.map(a => a.allocationId)) - 1;   // privremeni negativan id, pravi dodeljuje server
-    this.allocations.set([...list, { ...row, allocationId: id }]);
-
-    this.inputRow.set(emptyRow());
-    this.editInputRowPending = true;   // novi input red stiže u grid tek posle change detection-a
+ /** Kad se input red popuni (manager, strategija, quantity), postaje prava alokacija, a ispod nje novi prazan */
+onCellValueChanged(e: CellValueChangedEvent<Allocation>) {
+   e.api.refreshCells({ rowNodes: [e.node], force: true });   // ponovo proveri pravila celog reda
+  // postojeća alokacija izmenjena -> nov niz, da bi parent (allocatedQty) video promenu
+  if (!isInputRow(e.data)) {
+    this.allocations.set([...this.allocations()]);
+    return;
   }
+
+  const row = e.data;
+  if (!row.managerId || !row.strategyId || !(row.quantity > 0)) return;   // još nije popunjen
+
+  const list = this.allocations();
+  const id = Math.min(0, ...list.map(a => a.allocationId)) - 1;   // privremeni negativan id, pravi dodeljuje server
+  this.allocations.set([...list, { ...row, allocationId: id }]);
+
+  this.inputRow.set(emptyRow());
+  this.editInputRowPending = true;   // novi input red stiže u grid tek posle change detection-a
+}
 
   /**
    * Posle svake promene redova, sortiranja ili filtera: ako čekamo, otvori editor u input redu.
@@ -171,7 +165,7 @@ export class AllocationGridComponent {
   tryEditInputRow() {
     if (!this.editInputRowPending || !this.gridApi) return;
 
-    const node = this.gridApi.getRowNode(String(INPUT_ROW_ID));
+    const node = this.gridApi.getRowNode(String(0));
     if (node?.rowIndex == null || node.data !== this.inputRow()) return;
 
     this.editInputRowPending = false;
@@ -207,6 +201,12 @@ export class AllocationGridComponent {
     this.allocations.set(this.allocations().filter(a => a !== row));
   }
 
+/** prazno obavezno polje u pravom redu; input red (nova alokacija) se ne validira */
+  private missing(a: Allocation | undefined, value: number | undefined): boolean {
+    if (!a || isInputRow(a)) return false;
+    return !value;
+  }
+  
   private setManager(p: ValueSetterParams<Allocation>): boolean {
     const m = this.lookups.managers().find(x => x.display === p.newValue);
     if (!m || m.id === p.data.managerId) return false;
@@ -222,4 +222,11 @@ export class AllocationGridComponent {
     p.data.strategyId = s.id;
     return true;
   }
+  constructor() {
+  // greška sume se promenila -> ponovo proveri quantity ćelije svih redova???????
+  effect(() => {
+    this.qtyMismatch();
+    this.gridApi?.refreshCells({ columns: ['quantity'], force: true });
+  });
+}
 }
