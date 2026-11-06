@@ -12,6 +12,8 @@ import { LookupViewModel } from './app/lookup/lookup.view-model';
 
 import { LoginViewModel } from './app/login/login.view-model';
 import { LoginComponent } from './app/login/login.component';
+import { SecurityViewModel } from './app/security/security.view-model';
+import { SecurityComponent } from './app/security/security.component';
 
    ModuleRegistry.registerModules([AllEnterpriseModule]);
 
@@ -20,6 +22,7 @@ import { LoginComponent } from './app/login/login.component';
      provideWindowViews([OrderViewModel, OrderComponent],
       [LookupViewModel, LookupComponent],
       [LoginViewModel, LoginComponent],
+      [SecurityViewModel, SecurityComponent],
      )]
 
    }).catch((err) => console.error(err));

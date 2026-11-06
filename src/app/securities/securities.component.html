@@ -7,11 +7,12 @@
   [rowData]="rows()"
   [columnDefs]="columns"
   [defaultColDef]="defaultColDef"
-  [getRowId]="getRowId" />
+  [getRowId]="getRowId"
+  [getContextMenuItems]="getContextMenuItems" />
 
 <div class="footer">
     <!-- korak 3: otvara Security formu -->
-    <button class="btn btn-ghost" disabled>New Security</button>
+    <button class="btn btn-ghost" (click)="openNew()">New Security</button>
     <button class="btn" (click)="applyFilter()">Search</button>
-    <button class="btn">Clear</button>
+    <button class="btn" (click)="applied.set({ sid: '', description: '', mode: 'contains' })">Clear </button>
 </div>

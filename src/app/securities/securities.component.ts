@@ -1,35 +1,29 @@
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
+import { ColDef, GetContextMenuItems, GetRowIdFunc } from 'ag-grid-community';
 import { MatchMode, SecuritiesFilterComponent, SecurityFilter } from '../securities-filter/securities-filter.component';
-import { FormsModule } from '@angular/forms';
 import { LookupCache } from '../common/lookup-cache';
-import { ColDef, GetRowIdFunc } from 'ag-grid-enterprise';
 import { Security } from '../common/models';
+import { WindowService } from '../common/window/window.service';
+import { SecurityViewModel } from '../security/security.view-model';
 
 @Component({
   selector: 'app-securities',
   standalone: true,
-  imports: [AgGridAngular, SecuritiesFilterComponent, FormsModule],
+  imports: [AgGridAngular, SecuritiesFilterComponent],
   templateUrl: './securities.component.html',
-  styleUrl: './securities.component.css'
+  styleUrl: './securities.component.css',
 })
 export class SecuritiesComponent {
-
+  private readonly windows = inject(WindowService);
   private readonly lookups = inject(LookupCache);
+
   filterBar = viewChild(SecuritiesFilterComponent);
+
+  /** primenjeni filter; prazan = sve hartije */
   applied = signal<SecurityFilter>({ sid: '', description: '', mode: 'contains' });
-  mode = signal<MatchMode>('contains');
 
-  applyFilter() {
-    if (this.filterBar() != null) {
-      this.applied.set(this.filterBar()!.getFilter());
-    }
-  }
-
-  applyFilterFromFilterFields(filter: SecurityFilter) {
-    this.applied.set(filter);
-  }
-
+  /** hartije koje prolaze filter; preračuna se i kad SignalR osveži listu */
   readonly rows = computed(() => {
     const f = this.applied();
     return this.lookups.securities().filter((s) =>
@@ -46,6 +40,29 @@ export class SecuritiesComponent {
   defaultColDef: ColDef = { filter: true, sortable: true, resizable: true };
 
   getRowId: GetRowIdFunc<Security> = (p) => String(p.data.sid);
+
+  /** desni klik na grid: New Security, pa standardne stavke (Copy, Export...) */
+  getContextMenuItems: GetContextMenuItems<Security> = (p) => [
+    { name: 'New Security', action: () => this.openNew() },
+    'separator',
+    ...(p.defaultItems ?? []),
+  ];
+
+  /** Search dugme */
+  applyFilter() {
+    const filters = this.filterBar()?.getFilter();
+    if (filters) this.applied.set(filters);
+  }
+
+  /** Enter u filteru */
+  applyFilterFromFilterFields(filter: SecurityFilter) {
+    this.applied.set(filter);
+  }
+
+  /** New dugme i kontekstni meni: prazna forma */
+  openNew() {
+    this.windows.show(new SecurityViewModel());
+  }
 }
 
 /** da li vrednost prolazi tekst filtera; prazan tekst = nema filtera */
@@ -54,8 +71,8 @@ function matches(value: string, text: string, mode: MatchMode): boolean {
   const v = value.toLowerCase();
   const t = text.toLowerCase();
   switch (mode) {
-    case 'equals': return v === t;
+    case 'equals':     return v === t;
     case 'startsWith': return v.startsWith(t);
-    default: return v.includes(t);
+    default:           return v.includes(t);
   }
 }

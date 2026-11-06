@@ -1,0 +1,68 @@
+.main
+{
+    display: grid;
+    grid-template-rows: auto 1fr auto;   
+    height: 100%; 
+
+   --control-bg: #333333;
+   --control-border: #555555;
+   --focus: #7a7a7a;
+   --radius: 4px;
+}
+
+.fields
+{
+  grid-row: 1;
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;   /* ne razvlači kolone, sve levo */
+  gap: 4px 16px;            /* redovi 4px | između polja 16px */
+  padding: 4px;
+}
+
+.field
+{
+  display: grid;
+  grid-template-columns: 70px 150px;   /* labela 70 | input 150 */
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+}
+
+.control
+{
+  width: 100%;                /* popuni kolonu od 150px */
+  height: 26px;               /* ista visina za sve kontrole */
+  box-sizing: border-box;     /* visina i širina uključuju border */
+  font: inherit;              /* isti font kao labele */
+  background: var(--control-bg);
+  color: #ffffff;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
+  color-scheme: dark;         /* nativni delovi tamni */
+}
+
+.control:focus
+{
+  outline: none;              /* skida browserov beli okvir */
+  border-color: var(--focus); /* svetlija siva ivica u fokusu */
+}
+
+
+.footer
+{
+  grid-row: 3;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 6px;
+  padding: 6px;
+}
+.save
+{
+    grid-column: 2;
+}
+
+.close
+{
+    grid-column: 3;
+}
