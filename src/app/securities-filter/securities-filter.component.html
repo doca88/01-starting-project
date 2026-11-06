@@ -1,0 +1,18 @@
+<label class="field">
+    <span>Sid</span>
+    <input class="control sid" [(ngModel)]="sid" (keydown.enter)="enterDown($event)" />
+</label>
+
+<label class="field">
+    <span>Description</span>
+    <input class="control description" [(ngModel)]="description" (keydown.enter)="enterDown($event)" />
+</label>
+
+<label class="field">
+  <span>Match</span>
+  <select class="control mode" [(ngModel)]="mode">
+    <option value="contains">Contains</option>
+    <option value="startsWith">Starts with</option>
+    <option value="equals">Equals</option>
+  </select>
+</label>

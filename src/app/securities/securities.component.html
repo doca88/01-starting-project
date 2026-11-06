@@ -1,0 +1,17 @@
+<app-securities-filter (search)="applyFilterFromFilterFields($event)" #filterBar />
+
+<div class="title">Securities</div>
+
+<ag-grid-angular
+  class="grid"
+  [rowData]="rows()"
+  [columnDefs]="columns"
+  [defaultColDef]="defaultColDef"
+  [getRowId]="getRowId" />
+
+<div class="footer">
+    <!-- korak 3: otvara Security formu -->
+    <button class="btn btn-ghost" disabled>New Security</button>
+    <button class="btn" (click)="applyFilter()">Search</button>
+    <button class="btn">Clear</button>
+</div>

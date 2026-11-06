@@ -1,0 +1,27 @@
+/* modul popunjava .page: filter, naslov, grid, footer */
+:host {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+}
+
+.title {
+    font-weight: 600;
+}
+
+.grid {
+    flex: 1;
+    min-height: 0;
+    /* AG Grid mora da zna visinu */
+}
+
+/* dugmad desno, kao kod Orders */
+.footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    padding-top: 4px;
+}

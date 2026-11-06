@@ -32,8 +32,8 @@
     @else if (module() === 'dashboard') {
       <app-dashboard />
     }
-    @else {
-      <div class="placeholder">Coming soon</div>
+    @else if (module() === 'securities') {
+      <app-securities />
     }
   </div>
 } @else {

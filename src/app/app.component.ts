@@ -10,11 +10,12 @@ import { ConfigurationComponent } from './configuration/configuration.component'
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AuthService } from './common/auth-service';
 import { LoginViewModel } from './login/login.view-model';
+import { SecuritiesComponent } from './securities/securities.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [OrdersComponent, AllocationsComponent, LoadingComponent, ModulesMenuComponent, ConfigurationComponent, DashboardComponent],
+  imports: [OrdersComponent, AllocationsComponent, LoadingComponent, ModulesMenuComponent, ConfigurationComponent, DashboardComponent, SecuritiesComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })

@@ -1,0 +1,38 @@
+/* polja u jednom redu */
+:host
+{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* labela | kontrola */
+.field
+{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.control
+{
+  height: 24px;
+  box-sizing: border-box;
+  padding: 0 6px;
+  font: inherit;
+  color: #ffffff;
+  background: #333333;
+  border: 1px solid #555555;
+  border-radius: 3px;
+  color-scheme: dark;   /* tamna lista selecta */
+}
+
+.control:focus
+{
+  outline: none;
+  border-color: #7a7a7a;
+}
+
+.sid         { width: 120px; }
+.description { width: 260px; }
+.mode        { width: 110px; }
