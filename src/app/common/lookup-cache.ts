@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Manager, Security, Strategy } from './models';
 import { NotificationService, Notifications } from './notification.service';
 
@@ -46,7 +46,7 @@ export class LookupCache {
   }
 
   loadStrategies() {
-    
+
     this.load<Strategy>('/strategies/query', (s) => s.display).subscribe({
       next: (list) => this.strategies.set(list),
       error: (e) => console.error('strategies load failed', e),
@@ -58,6 +58,19 @@ export class LookupCache {
       next: (list) => this.securities.set(list),
       error: (e) => console.error('securities load failed', e),
     });
+  }
+
+ /** nova -> POST /securities (Sid dodeljuje baza), postojeća -> PUT /securities/{sid} */
+saveSecurity(security: Pick<Security, 'sid' | 'description'>, isNew: boolean): Observable<Security> {
+  const body = { description: security.description };
+  return isNew
+    ? this.http.post<Security>('/securities', body)
+    : this.http.put<Security>(`/securities/${security.sid}`, body);
+}
+
+  /** jedna hartija sa servera: GET /securities/{sid} */
+  getSecurity(sid: number): Observable<Security> {
+    return this.http.get<Security>(`/securities/${sid}`);
   }
 
   /** POST /xxx/query sa praznim upitom, sortirano po nazivu (Manager 2 pre Manager 10) */

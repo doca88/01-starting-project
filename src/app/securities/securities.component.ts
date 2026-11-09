@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
-import { ColDef, GetContextMenuItems, GetRowIdFunc } from 'ag-grid-community';
+import { ColDef, GetContextMenuItems, GetRowIdFunc, RowDoubleClickedEvent } from 'ag-grid-community';
 import { MatchMode, SecuritiesFilterComponent, SecurityFilter } from '../securities-filter/securities-filter.component';
 import { LookupCache } from '../common/lookup-cache';
 import { Security } from '../common/models';
@@ -41,9 +41,13 @@ export class SecuritiesComponent {
 
   getRowId: GetRowIdFunc<Security> = (p) => String(p.data.sid);
 
-  /** desni klik na grid: New Security, pa standardne stavke (Copy, Export...) */
+  /** desni klik: Open (samo na redu), pa standardne stavke (Copy, Export...) */
   getContextMenuItems: GetContextMenuItems<Security> = (p) => [
-    { name: 'New Security', action: () => this.openNew() },
+    {
+      name: 'Open Security',
+      disabled: !p.node?.data,
+      action: () => this.openSecurity(p.node!.data!),
+    },
     'separator',
     ...(p.defaultItems ?? []),
   ];
@@ -63,6 +67,12 @@ export class SecuritiesComponent {
   openNew() {
     this.windows.show(new SecurityViewModel());
   }
+
+  /** postojeća hartija: forma sa njenim vrednostima, readonly dok ne klikneš Edit */
+  openSecurity(s: Security) {
+    this.windows.show(new SecurityViewModel(s));
+  }
+
 }
 
 /** da li vrednost prolazi tekst filtera; prazan tekst = nema filtera */
@@ -71,8 +81,9 @@ function matches(value: string, text: string, mode: MatchMode): boolean {
   const v = value.toLowerCase();
   const t = text.toLowerCase();
   switch (mode) {
-    case 'equals':     return v === t;
+    case 'equals': return v === t;
     case 'startsWith': return v.startsWith(t);
-    default:           return v.includes(t);
+    default: return v.includes(t);
   }
+
 }

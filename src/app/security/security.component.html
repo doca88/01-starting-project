@@ -1,20 +1,27 @@
 <app-window-frame [title]="vm.title" (closeClicked)="close()">
   <div class="main">
-        <div class="fields">
-        <label class="field">
+    <div class="fields">
+      <label class="field">
         <span class="label">Sid</span>
-        <input class="control" />
-        </label>
+        <!-- Sid dodeljuje baza: samo za čitanje -->
+        <input class="control" [value]="sid() ?? ''" placeholder="auto" readonly />
+      </label>
 
-        <label class="field">
+      <label class="field">
         <span class="label">Description</span>
-        <input class="control" />
-        </label>
+        <input class="control" [(ngModel)]="description" [readonly]="!editable()" />
+      </label>
     </div>
 
+    @if (error()) {
+      <div class="error">{{ error() }}</div>
+    }
+
     <footer class="footer">
-        <button type="button" class="btn save" (click)="save()">Save</button>
-        <button type="button" class="btn close" (click)="close()">Close</button>
+      <button type="button" class="btn save" (click)="save()" [disabled]="!canSave()">Save</button>
+      <button type="button" class="btn edit" (click)="edit()" [disabled]="editable()">Edit</button>
+      <button type="button" class="btn refresh" (click)="refresh()" [disabled]="vm.isNew || saving()">Refresh</button>
+      <button type="button" class="btn close" (click)="close()">Close</button>
     </footer>
-</div>
+  </div>
 </app-window-frame>
