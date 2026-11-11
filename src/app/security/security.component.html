@@ -9,7 +9,7 @@
 
       <label class="field">
         <span class="label">Description</span>
-        <input class="control" [(ngModel)]="description" [readonly]="!editable()" />
+        <input class="control" [(ngModel)]="description" [readonly]="!editable()" [class.Error]="descriptionMissing()" />
       </label>
     </div>
 

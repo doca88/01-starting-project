@@ -63,6 +63,11 @@
   color: #9a9a9a;
 }
 
+.control.Error
+{
+  border-color: #ff6b7a;
+}
+
 /* greška sa servera, u srednjem redu */
 .error
 {

@@ -236,4 +236,5 @@ readonly invalid = computed(() =>
   this.qtyMismatch() || this.securityMissing() || this.tradeDateMissing() ||
   this.managerMissing() || this.strategyMissing()
 );
+
 }

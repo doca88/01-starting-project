@@ -34,7 +34,9 @@ export class SecurityComponent {
   readonly editable = computed(() => this.vm.isNew || this.editing());
 
   /** Save aktivan samo kad se sme menjati, opis je popunjen i ništa ne traje */
-  readonly canSave = computed(() => this.editable() && !!this.description().trim() && !this.saving());
+  readonly canSave = computed(
+    () => this.editable() && !this.descriptionMissing() && !this.saving(),
+  );
 
   /** Save: nova -> POST, postojeća -> PUT; posle snimanja ponovo učitaj sa servera */
   save() {
@@ -43,10 +45,13 @@ export class SecurityComponent {
     this.error.set('');
 
     this.lookups
-      .saveSecurity({ sid: this.sid() ?? 0, description: this.description().trim() }, this.vm.isNew)
+      .saveSecurity(
+        { sid: this.sid() ?? 0, description: this.description().trim() },
+        this.vm.isNew,
+      )
       .subscribe({
         next: (saved) => {
-          this.vm.security.set(saved);   // od sad postojeća: isNew -> false, naslov -> "Security <sid>"
+          this.vm.security.set(saved); // od sad postojeća: isNew -> false, naslov -> "Security <sid>"
           this.refresh();
         },
         error: (e) => this.fail(e),
@@ -88,4 +93,8 @@ export class SecurityComponent {
     this.error.set(`${e.status} ${e.statusText}`);
     this.saving.set(false);
   }
+
+  readonly descriptionMissing = computed(
+    () => this.editable() && !this.description().trim(),
+  );
 }
