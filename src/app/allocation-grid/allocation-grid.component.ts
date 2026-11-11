@@ -28,11 +28,10 @@ function emptyRow(): Allocation {
 }
 
 @Component({
-  selector: 'app-allocation-grid',
-  standalone: true,
-  imports: [AgGridAngular],
-  templateUrl: './allocation-grid.component.html',
-  styleUrl: './allocation-grid.component.css',
+    selector: 'app-allocation-grid',
+    imports: [AgGridAngular],
+    templateUrl: './allocation-grid.component.html',
+    styleUrl: './allocation-grid.component.css'
 })
 export class AllocationGridComponent {
   private readonly lookups = inject(LookupCache);

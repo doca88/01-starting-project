@@ -10,11 +10,10 @@ import { Allocation, Order, Security } from '../common/models';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'app-order-form',
-  standalone: true,
-  imports: [ReactiveFormsModule, WindowFrameComponent, AllocationGridComponent],
-  templateUrl: './order.component.html',
-  styleUrls: ['./order.component.css'],
+    selector: 'app-order-form',
+    imports: [ReactiveFormsModule, WindowFrameComponent, AllocationGridComponent],
+    templateUrl: './order.component.html',
+    styleUrls: ['./order.component.css']
 })
 export class OrderComponent {
   private readonly fb = inject(FormBuilder);

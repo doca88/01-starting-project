@@ -10,11 +10,10 @@ export interface SecurityFilter {
 }
 
 @Component({
-  selector: 'app-securities-filter',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './securities-filter.component.html',
-  styleUrl: './securities-filter.component.css'
+    selector: 'app-securities-filter',
+    imports: [FormsModule],
+    templateUrl: './securities-filter.component.html',
+    styleUrl: './securities-filter.component.css'
 })
 
 export class SecuritiesFilterComponent {

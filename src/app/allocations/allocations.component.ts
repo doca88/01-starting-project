@@ -5,11 +5,10 @@ import { Allocation } from '../common/models';
 import { formatQty } from '../common/utilities';
 
 @Component({
-  selector: 'app-allocations',
-  standalone: true,
-  imports: [AgGridAngular],
-  templateUrl: './allocations.component.html',
-  styleUrl: './allocations.component.css',
+    selector: 'app-allocations',
+    imports: [AgGridAngular],
+    templateUrl: './allocations.component.html',
+    styleUrl: './allocations.component.css'
 })
 export class AllocationsComponent {
   orderId = input<number | null>(null);

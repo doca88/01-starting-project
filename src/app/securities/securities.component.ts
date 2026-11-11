@@ -8,11 +8,10 @@ import { WindowService } from '../common/window/window.service';
 import { SecurityViewModel } from '../security/security.view-model';
 
 @Component({
-  selector: 'app-securities',
-  standalone: true,
-  imports: [AgGridAngular, SecuritiesFilterComponent],
-  templateUrl: './securities.component.html',
-  styleUrl: './securities.component.css',
+    selector: 'app-securities',
+    imports: [AgGridAngular, SecuritiesFilterComponent],
+    templateUrl: './securities.component.html',
+    styleUrl: './securities.component.css'
 })
 export class SecuritiesComponent {
   private readonly windows = inject(WindowService);

@@ -6,11 +6,10 @@ import { LookupViewModel } from './lookup.view-model';
 import { LookupService } from './lookup.service';
 
 @Component({
-  selector: 'app-lookup',
-  standalone: true,
-  imports: [FormsModule, WindowFrameComponent],
-  templateUrl: './lookup.component.html',
-  styleUrl: './lookup.component.css',
+    selector: 'app-lookup',
+    imports: [FormsModule, WindowFrameComponent],
+    templateUrl: './lookup.component.html',
+    styleUrl: './lookup.component.css'
 })
 export class LookupComponent {
   private readonly lookupService = inject(LookupService);

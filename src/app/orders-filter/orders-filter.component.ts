@@ -12,11 +12,10 @@ export interface OrdersFilter {
 }
 
 @Component({
-  selector: 'app-orders-filter',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './orders-filter.component.html',
-  styleUrl: './orders-filter.component.css'
+    selector: 'app-orders-filter',
+    imports: [FormsModule],
+    templateUrl: './orders-filter.component.html',
+    styleUrl: './orders-filter.component.css'
 })
 
 export class OrdersFilterComponent {

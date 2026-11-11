@@ -10,11 +10,10 @@ import { OrdersFilterComponent } from '../orders-filter/orders-filter.component'
 import { formatQty } from '../common/utilities';
 
 @Component({
-  selector: 'app-orders',
-  standalone: true,
-  imports: [AgGridAngular, OrdersFilterComponent],
-  templateUrl: './orders.component.html',
-  styleUrl: './orders.component.css',
+    selector: 'app-orders',
+    imports: [AgGridAngular, OrdersFilterComponent],
+    templateUrl: './orders.component.html',
+    styleUrl: './orders.component.css'
 })
 export class OrdersComponent implements OnInit {
   private ordersService = inject(OrdersService);

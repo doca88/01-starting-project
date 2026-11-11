@@ -7,11 +7,10 @@ import { AgGridAngular } from 'ag-grid-angular';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-configuration',
-  standalone: true,
-  imports: [AgGridAngular, FormsModule],
-  templateUrl: './configuration.component.html',
-  styleUrl: './configuration.component.css',
+    selector: 'app-configuration',
+    imports: [AgGridAngular, FormsModule],
+    templateUrl: './configuration.component.html',
+    styleUrl: './configuration.component.css'
 })
 export class ConfigurationComponent {
   private readonly windows = inject(WindowService);

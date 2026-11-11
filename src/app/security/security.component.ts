@@ -7,11 +7,10 @@ import { LookupCache } from '../common/lookup-cache';
 import { Security } from '../common/models';
 
 @Component({
-  selector: 'app-security',
-  standalone: true,
-  imports: [WindowFrameComponent, FormsModule],
-  templateUrl: './security.component.html',
-  styleUrl: './security.component.css',
+    selector: 'app-security',
+    imports: [WindowFrameComponent, FormsModule],
+    templateUrl: './security.component.html',
+    styleUrl: './security.component.css'
 })
 export class SecurityComponent {
   protected readonly vm = injectViewModel<SecurityViewModel>();

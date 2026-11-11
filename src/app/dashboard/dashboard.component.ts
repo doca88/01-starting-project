@@ -29,11 +29,10 @@ const pride = {
 const rainbow = Object.values(pride);
 
 @Component({
-  selector: 'app-dashboard',
-  standalone: true,
-  imports: [FormsModule, DecimalPipe, AgCharts],
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css',
+    selector: 'app-dashboard',
+    imports: [FormsModule, DecimalPipe, AgCharts],
+    templateUrl: './dashboard.component.html',
+    styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
   protected readonly lookups = inject(LookupCache);

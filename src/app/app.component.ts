@@ -13,11 +13,10 @@ import { LoginViewModel } from './login/login.view-model';
 import { SecuritiesComponent } from './securities/securities.component';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [OrdersComponent, AllocationsComponent, LoadingComponent, ModulesMenuComponent, ConfigurationComponent, DashboardComponent, SecuritiesComponent],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+    selector: 'app-root',
+    imports: [OrdersComponent, AllocationsComponent, LoadingComponent, ModulesMenuComponent, ConfigurationComponent, DashboardComponent, SecuritiesComponent],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.css'
 })
 export class AppComponent {
   private windows = inject(WindowService);
