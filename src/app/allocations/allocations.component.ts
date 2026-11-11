@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef } from 'ag-grid-community';
 import { Allocation } from '../common/models';
@@ -8,6 +8,7 @@ import { formatQty } from '../common/utilities';
     selector: 'app-allocations',
     imports: [AgGridAngular],
     templateUrl: './allocations.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './allocations.component.css'
 })
 export class AllocationsComponent {

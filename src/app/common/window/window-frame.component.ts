@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * Zajednički "chrome" svakog prozora: naslov, X, telo i futer za dugmad.
@@ -11,6 +11,7 @@ import { Component, input, output } from '@angular/core';
   selector: 'app-window-frame',
   standalone: true,
   templateUrl: './window-frame.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './window-frame.component.css'
 })
 

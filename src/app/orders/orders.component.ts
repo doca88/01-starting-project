@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, output, viewChild } from '@angular/core';
+import { Component, OnInit, inject, signal, output, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef, GetContextMenuItems, RowDoubleClickedEvent, RowSelectionOptions, SelectionChangedEvent, StatusBar } from 'ag-grid-community';
 import { OrdersService } from '../common/orders.service';
@@ -13,6 +13,7 @@ import { formatQty } from '../common/utilities';
     selector: 'app-orders',
     imports: [AgGridAngular, OrdersFilterComponent],
     templateUrl: './orders.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './orders.component.css'
 })
 export class OrdersComponent implements OnInit {

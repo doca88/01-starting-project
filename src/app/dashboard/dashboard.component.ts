@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AgCharts } from 'ag-charts-angular';
@@ -32,6 +32,7 @@ const rainbow = Object.values(pride);
     selector: 'app-dashboard',
     imports: [FormsModule, DecimalPipe, AgCharts],
     templateUrl: './dashboard.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {

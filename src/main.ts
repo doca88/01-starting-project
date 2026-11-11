@@ -1,6 +1,6 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideZoneChangeDetection } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { ModuleRegistry } from 'ag-grid-community';
 import { AllEnterpriseModule } from 'ag-grid-enterprise';
 
@@ -20,7 +20,7 @@ ModuleRegistry.registerModules([AllEnterpriseModule]);
 bootstrapApplication(AppComponent, {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),   // zadrži zone.js i posle Angulara 21
-    provideHttpClient(),
+    provideHttpClient(withXhr()),
     provideWindowViews(
       [OrderViewModel, OrderComponent],
       [LookupViewModel, LookupComponent],

@@ -1,4 +1,4 @@
-import { Component, model, signal } from '@angular/core';
+import { Component, model, signal, ChangeDetectionStrategy } from '@angular/core';
 
 export type Module = 'orders' | 'securities' | 'configuration' |'dashboard';
 
@@ -6,6 +6,7 @@ export type Module = 'orders' | 'securities' | 'configuration' |'dashboard';
   selector: 'app-modules-menu',
   standalone: true,
   templateUrl: './modules-menu.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './modules-menu.component.css',
 })
 export class ModulesMenuComponent {

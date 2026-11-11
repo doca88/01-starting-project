@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { injectViewModel } from '../common/window/window.service';
 import { WindowFrameComponent } from '../common/window/window-frame.component';
@@ -9,6 +9,7 @@ import { LookupService } from './lookup.service';
     selector: 'app-lookup',
     imports: [FormsModule, WindowFrameComponent],
     templateUrl: './lookup.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './lookup.component.css'
 })
 export class LookupComponent {

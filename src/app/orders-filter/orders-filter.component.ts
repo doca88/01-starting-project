@@ -1,4 +1,4 @@
-import { Component, output, inject, signal, computed } from '@angular/core';
+import { Component, output, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { LookupCache } from '../common/lookup-cache';
 import { FormsModule } from '@angular/forms';
 
@@ -15,6 +15,7 @@ export interface OrdersFilter {
     selector: 'app-orders-filter',
     imports: [FormsModule],
     templateUrl: './orders-filter.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './orders-filter.component.css'
 })
 

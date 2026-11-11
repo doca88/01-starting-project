@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { injectViewModel } from '../common/window/window.service';
 import { WindowFrameComponent } from '../common/window/window-frame.component';
@@ -10,6 +10,7 @@ import { LoginViewModel } from './login.view-model';
     selector: 'app-login',
     imports: [FormsModule, WindowFrameComponent],
     templateUrl: './login.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './login.component.css'
 })
 export class LoginComponent {

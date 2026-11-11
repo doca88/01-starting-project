@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { LookupCache } from '../common/lookup-cache';
 import { OrdersService } from '../common/orders.service';
@@ -13,6 +13,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
     selector: 'app-order-form',
     imports: [ReactiveFormsModule, WindowFrameComponent, AllocationGridComponent],
     templateUrl: './order.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./order.component.css']
 })
 export class OrderComponent {

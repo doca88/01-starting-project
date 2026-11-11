@@ -1,4 +1,4 @@
-import { Component, output, signal } from '@angular/core';
+import { Component, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 export type MatchMode = 'contains' | 'startsWith' | 'equals';
@@ -13,6 +13,7 @@ export interface SecurityFilter {
     selector: 'app-securities-filter',
     imports: [FormsModule],
     templateUrl: './securities-filter.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './securities-filter.component.css'
 })
 

@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, inject, signal, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef, GetContextMenuItems, GetRowIdFunc, RowDoubleClickedEvent } from 'ag-grid-community';
 import { MatchMode, SecuritiesFilterComponent, SecurityFilter } from '../securities-filter/securities-filter.component';
@@ -11,6 +11,7 @@ import { SecurityViewModel } from '../security/security.view-model';
     selector: 'app-securities',
     imports: [AgGridAngular, SecuritiesFilterComponent],
     templateUrl: './securities.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './securities.component.css'
 })
 export class SecuritiesComponent {

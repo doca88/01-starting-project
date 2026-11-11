@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { WindowService } from '../common/window/window.service';
 import { LookupItem, LookupType, LookupViewModel } from '../lookup/lookup.view-model';
 import { LookupCache } from '../common/lookup-cache';
@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
     selector: 'app-configuration',
     imports: [AgGridAngular, FormsModule],
     templateUrl: './configuration.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './configuration.component.css'
 })
 export class ConfigurationComponent {

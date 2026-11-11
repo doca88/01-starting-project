@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, model, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, model, signal, ChangeDetectionStrategy } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
   CellValueChangedEvent,
@@ -31,6 +31,7 @@ function emptyRow(): Allocation {
     selector: 'app-allocation-grid',
     imports: [AgGridAngular],
     templateUrl: './allocation-grid.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './allocation-grid.component.css'
 })
 export class AllocationGridComponent {

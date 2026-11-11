@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SecurityViewModel } from './security.view-model';
 import { injectViewModel } from '../common/window/window.service';
@@ -10,6 +10,7 @@ import { Security } from '../common/models';
     selector: 'app-security',
     imports: [WindowFrameComponent, FormsModule],
     templateUrl: './security.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './security.component.css'
 })
 export class SecurityComponent {

@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { OrdersComponent } from './orders/orders.component';
 import { AllocationsComponent } from './allocations/allocations.component';
 import { LoadingComponent } from './loading/loading.component';
@@ -16,6 +16,7 @@ import { SecuritiesComponent } from './securities/securities.component';
     selector: 'app-root',
     imports: [OrdersComponent, AllocationsComponent, LoadingComponent, ModulesMenuComponent, ConfigurationComponent, DashboardComponent, SecuritiesComponent],
     templateUrl: './app.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './app.component.css'
 })
 export class AppComponent {
