@@ -223,10 +223,10 @@ onCellValueChanged(e: CellValueChangedEvent<Allocation>) {
     return true;
   }
   constructor() {
-  // greška sume se promenila -> ponovo proveri quantity ćelije svih redova???????
-  effect(() => {
-    this.qtyMismatch();
-    this.gridApi?.refreshCells({ columns: ['quantity'], force: true });
-  });
-}
+    // greška sume se promenila -> ponovo proveri quantity ćelije svih redova
+    effect(() => {
+      this.qtyMismatch();
+      this.gridApi?.refreshCells({ columns: ['quantity'], force: true });
+    });
+  }
 }

@@ -1,5 +1,5 @@
 <app-window-frame [title]="orderViewModel.title" (closeClicked)="close()">
- <div class="form">
+  <div class="form">
     <div>
       <button type="button" class="tab" [class.tabActive]="tab() === 'order'" (click)="tab.set('order')">
         Order
@@ -85,13 +85,23 @@
       <app-allocation-grid [(allocations)]="allocations" [editable]="editable()" [qtyMismatch]="orderForm.quantity().invalid()" />
     </div>
     }
+
+    @if (error()) {
+      <div class="error">{{ error() }}</div>
+    }
+
     <footer class="footer">
       <!-- Book levo; aktivan za novi nalog i u Edit režimu -->
-     <button type="submit" class="btn" [disabled]="saving() || !editable() || orderForm().invalid()">Book</button>
+      <button type="button" class="btn" [disabled]="!canBook()" (click)="book()">Book</button>
 
       <!-- Edit: aktivan samo kad je forma readonly (snimljen/postojeći nalog) -->
-      <button type="button" class="btn" [disabled]="editable()" (click)="edit()">
+      <button type="button" class="btn" [disabled]="editable() || saving()" (click)="edit()">
         Edit
+      </button>
+
+      <!-- Cancel: odbaci izmene postojećeg naloga bez poziva servera -->
+      <button type="button" class="btn" [disabled]="orderViewModel.isNew || !editing() || saving()" (click)="cancel()">
+        Cancel
       </button>
 
       <!-- Refresh: ponovo učitaj nalog; novi nalog nema šta da učita -->

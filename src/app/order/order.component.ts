@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { form, FormField, readonly, required, min, validate } from '@angular/forms/signals';
 import { LookupCache } from '../common/lookup-cache';
 import { OrdersService } from '../common/orders.service';
@@ -28,11 +28,15 @@ function toModel(o: Order | null): OrderModel {
   };
 }
 
+/** alokacija je popunjena (i šalje se serveru) kad ima managera, strategiju i quantity > 0 */
+function isComplete(a: Allocation): boolean {
+  return !!a.managerId && !!a.strategyId && a.quantity > 0;
+}
+
 @Component({
     selector: 'app-order-form',
     imports: [FormField, WindowFrameComponent, AllocationGridComponent],
     templateUrl: './order.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./order.component.css']
 })
 export class OrderComponent {
@@ -46,21 +50,27 @@ export class OrderComponent {
   /**
    * Radna kopija alokacija trenutnog naloga: grid upisuje izmene ovde, a ne u order().
    * Grid je menja preko [(allocations)] (popunjen input red, Delete, editovanje ćelija).
-   * Izmene preživljavaju prelazak sa taba na tab; Book i Refresh je prave iznova.
+   * Izmene preživljavaju prelazak sa taba na tab; Book, Refresh i Cancel je prave iznova.
    */
   readonly allocations = signal<Allocation[]>(this.copyAllocations());
 
-  /** true dok traje snimanje - Book je tada onemogućen (nema duplog snimanja) */
+  /** true dok traje snimanje ili učitavanje - dugmad su tada onemogućena (nema duplog snimanja) */
   readonly saving = signal(false);
 
   /** true kad je korisnik kliknuo Edit na postojećem nalogu */
   readonly editing = signal(false);
 
+  /** poruka ako server odbije zahtev */
+  readonly error = signal('');
+
   /** polja se mogu menjati: novi nalog ili Edit režim; inače je forma readonly */
   readonly editable = computed(() => this.orderViewModel.isNew || this.editing());
 
-  /** suma quantity svih alokacija */
-  readonly allocatedQty = computed(() => this.allocations().reduce((sum, a) => sum + a.quantity, 0));
+  /** alokacije koje se šalju serveru; po njima se računa i suma, pa validacija i slanje vide isto */
+  readonly completeAllocations = computed(() => this.allocations().filter(isComplete));
+
+  /** suma quantity popunjenih alokacija */
+  readonly allocatedQty = computed(() => this.completeAllocations().reduce((sum, a) => sum + a.quantity, 0));
 
   /** model forme: podaci naloga koje korisnik menja */
   readonly orderObject = signal<OrderModel>(toModel(this.orderViewModel.order()));
@@ -84,6 +94,9 @@ export class OrderComponent {
         : undefined,
     );
   });
+
+  /** Book aktivan samo u Edit režimu, kad forma prolazi sva pravila i ništa ne traje */
+  readonly canBook = computed(() => this.editable() && this.orderForm().valid() && !this.saving());
 
   // ----- Security: padajuća lista koja pretražuje po sid-u, a u polje upisuje description -----
 
@@ -142,20 +155,23 @@ export class OrderComponent {
     this.editing.set(true);
   }
 
+  /** Cancel: odbaci izmene lokalno (bez poziva servera) i vrati u readonly */
+  cancel() {
+    const o = this.orderViewModel.order();
+    if (o) this.show(o);
+    this.error.set('');
+  }
+
   /** Refresh: ponovo učitaj nalog sa servera; nesnimljene izmene se odbacuju */
   refresh() {
     const id = this.orderViewModel.order()?.orderId;
     if (!id) return;
+    this.saving.set(true);
+    this.error.set('');
 
     this.ordersService.get(id).subscribe({
-      next: (o: Order) => {
-        this.orderViewModel.order.set(o);
-        this.orderObject.set(toModel(o));
-        this.securityText.set(o.security?.description ?? '');
-        this.allocations.set(this.copyAllocations());   // nesnimljene izmene u gridu se odbacuju
-        this.editing.set(false);   // nazad u readonly
-      },
-      error: (e: unknown) => console.error('order refresh failed', e),
+      next: (o: Order) => this.show(o),
+      error: (e) => this.fail(e),
     });
   }
 
@@ -169,10 +185,11 @@ export class OrderComponent {
    * Posle snimanja forma je ponovo readonly, a Book onemogućen do sledećeg Edit-a.
    */
   book() {
-    if (this.saving() || !this.editable() || this.orderForm().invalid()) return;
+    if (!this.canBook()) return;
 
     const v = this.orderObject();
     this.saving.set(true);
+    this.error.set('');
 
     this.ordersService
       .save({
@@ -182,22 +199,30 @@ export class OrderComponent {
         quantity: v.quantity ?? 0,
         managerId: Number(v.managerId),     // select daje string -> server očekuje broj
         strategyId: Number(v.strategyId),
-        allocations: this.allocations()
-          .filter((a) => a.managerId && a.strategyId && a.quantity > 0)     // nepopunjeni redovi se ne šalju
+        allocations: this.completeAllocations()   // nepopunjeni redovi se ne šalju
           .map((a) => (a.allocationId < 0 ? { ...a, allocationId: 0 } : a)), // novi red: id dodeljuje server
       })
       .subscribe({
-        next: (saved: Order) => {
-          this.orderViewModel.order.set(saved);   // naslov prozora prelazi na "Order <id>"
-          this.allocations.set(this.copyAllocations());   // alokacije kako ih je server snimio
-          this.editing.set(false);    // nazad u readonly
-          this.saving.set(false);
-        },
-        error: (e: unknown) => {
-          console.error('order save failed', e);
-          this.saving.set(false);
-        },
+        next: (saved: Order) => this.show(saved),   // naslov prozora prelazi na "Order <id>"
+        error: (e) => this.fail(e),
       });
+  }
+
+  /** upiši nalog sa servera u formu, alokacije i security polje, i vrati formu u readonly */
+  private show(o: Order) {
+    this.orderViewModel.order.set(o);
+    this.orderObject.set(toModel(o));
+    this.securityText.set(o.security?.description ?? '');
+    this.securityQuery.set('');
+    this.securityOpen.set(false);
+    this.allocations.set(this.copyAllocations());   // nesnimljene izmene u gridu se odbacuju
+    this.editing.set(false);
+    this.saving.set(false);
+  }
+
+  private fail(e: { status: number; statusText: string }) {
+    this.error.set(e.status === 0 ? 'Server nije dostupan' : `${e.status} ${e.statusText}`);
+    this.saving.set(false);
   }
 
   /** Kopija alokacija iz naloga (grid menja kopiju, order() ostaje poslednje snimljeno stanje) */

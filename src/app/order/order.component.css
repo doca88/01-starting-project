@@ -253,3 +253,10 @@
 {
   border-color: #ff6b7a;
 }
+
+/* greška sa servera, iznad footera */
+.error
+{
+  padding: 4px 8px;
+  color: #ff6b7a;
+}

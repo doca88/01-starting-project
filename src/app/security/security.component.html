@@ -9,7 +9,7 @@
 
       <label class="field">
         <span class="label">Description</span>
-        <input class="control" [formField]="securityForm.description" [class.Error]="descriptionMissing()" />
+        <input class="control" [formField]="securityForm.description" [class.Error]="editable() && securityForm.description().invalid()" />
       </label>
     </div>
 
@@ -19,7 +19,8 @@
 
     <footer class="footer">
       <button type="button" class="btn save" (click)="save()" [disabled]="!canSave()">Save</button>
-      <button type="button" class="btn edit" (click)="edit()" [disabled]="editable()">Edit</button>
+      <button type="button" class="btn edit" (click)="edit()" [disabled]="editable() || saving()">Edit</button>
+      <button type="button" class="btn cancel" (click)="cancel()" [disabled]="vm.isNew || !editing() || saving()">Cancel</button>
       <button type="button" class="btn refresh" (click)="refresh()" [disabled]="vm.isNew || saving()">Refresh</button>
       <button type="button" class="btn close" (click)="close()">Close</button>
     </footer>
