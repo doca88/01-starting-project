@@ -1,5 +1,5 @@
-import { Component, computed, effect, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { form, FormField, readonly, required, min, validate } from '@angular/forms/signals';
 import { LookupCache } from '../common/lookup-cache';
 import { OrdersService } from '../common/orders.service';
 import { injectViewModel } from '../common/window/window.service';
@@ -7,17 +7,35 @@ import { WindowFrameComponent } from '../common/window/window-frame.component';
 import { OrderViewModel } from './order.view-model';
 import { AllocationGridComponent } from '../allocation-grid/allocation-grid.component';
 import { Allocation, Order, Security } from '../common/models';
-import { toSignal } from '@angular/core/rxjs-interop';
+
+/** podaci order forme; select radi sa stringom, pa su managerId i strategyId stringovi ('' = nije izabran) */
+interface OrderModel {
+  sid: number;              // 0 = hartija nije izabrana iz liste
+  tradeDate: string;        // yyyy-MM-dd
+  quantity: number | null;  // null = prazno polje
+  managerId: string;
+  strategyId: string;
+}
+
+/** nalog sa servera -> model forme (null = nov nalog) */
+function toModel(o: Order | null): OrderModel {
+  return {
+    sid: o?.sid ?? 0,
+    tradeDate: (o?.tradeDate ?? new Date().toLocaleDateString('sv-SE')).substring(0, 10),
+    quantity: o?.quantity ?? null,
+    managerId: o ? String(o.managerId) : '',
+    strategyId: o ? String(o.strategyId) : '',
+  };
+}
 
 @Component({
     selector: 'app-order-form',
-    imports: [ReactiveFormsModule, WindowFrameComponent, AllocationGridComponent],
+    imports: [FormField, WindowFrameComponent, AllocationGridComponent],
     templateUrl: './order.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./order.component.css']
 })
 export class OrderComponent {
-  private readonly fb = inject(FormBuilder);
   private readonly ordersService = inject(OrdersService);
   protected readonly orderViewModel = injectViewModel<OrderViewModel>();
   protected readonly lookups = inject(LookupCache);
@@ -41,22 +59,31 @@ export class OrderComponent {
   /** polja se mogu menjati: novi nalog ili Edit režim; inače je forma readonly */
   readonly editable = computed(() => this.orderViewModel.isNew || this.editing());
 
-  /** Polja forme, popunjena iz naloga (ili prazna za novi) */
-  readonly form = this.fb.nonNullable.group({
-    sid: this.orderViewModel.order()?.sid ?? 0,
-    tradeDate: (this.orderViewModel.order()?.tradeDate ?? new Date().toLocaleDateString('sv-SE')).substring(0, 10), // yyyy-MM-dd
-    quantity: this.orderViewModel.order()?.quantity ?? 0,
-    managerId: this.orderViewModel.order()?.managerId ?? 0,
-    strategyId: this.orderViewModel.order()?.strategyId ?? 0,
-  });
+  /** suma quantity svih alokacija */
+  readonly allocatedQty = computed(() => this.allocations().reduce((sum, a) => sum + a.quantity, 0));
 
-  constructor() {
-    // Polja otključana za novi nalog i u Edit režimu; inače zaključana (readonly)
-    effect(() => {
-      if (this.editable()) this.form.enable();
-      else this.form.disable();
-    });
-  }
+  /** model forme: podaci naloga koje korisnik menja */
+  readonly orderObject = signal<OrderModel>(toModel(this.orderViewModel.order()));
+
+  /** forma nad modelom: sva pravila na jednom mestu */
+  readonly orderForm = form(this.orderObject, (p) => {
+    // cela forma zaključana van Edit režima; zaključana polja se i ne validiraju
+    readonly(p, { when: () => !this.editable() });
+
+    min(p.sid, 1, { message: 'Select a security' });
+    required(p.tradeDate, { message: 'Trade date is required' });
+    required(p.managerId, { message: 'Select a manager' });
+    required(p.strategyId, { message: 'Select a strategy' });
+
+    required(p.quantity, { message: 'Quantity is required' });
+    min(p.quantity, 0.01, { message: 'Quantity must be > 0' });
+    // suma alokacija mora biti jednaka Quantity (zaokruženo na 2 decimale)
+    validate(p.quantity, ({ value }) =>
+      Math.round(this.allocatedQty() * 100) !== Math.round((value() ?? 0) * 100)
+        ? { kind: 'allocation', message: `Allocated ${this.allocatedQty().toFixed(2)}` }
+        : undefined,
+    );
+  });
 
   // ----- Security: padajuća lista koja pretražuje po sid-u, a u polje upisuje description -----
 
@@ -81,15 +108,15 @@ export class OrderComponent {
   searchSecurity(text: string) {
     this.securityText.set(text);
     this.securityQuery.set(text);
-    this.form.controls.sid.setValue(0);
+    this.orderObject.update((m) => ({ ...m, sid: 0 }));
     this.securityOpen.set(true);
   }
 
-  /** izbor iz liste: sid u formu, description u polje */
+  /** izbor iz liste: sid u model, description u polje */
   pickSecurity(s: Security) {
     this.securityText.set(s.description);
     this.securityQuery.set('');
-    this.form.controls.sid.setValue(s.sid);
+    this.orderObject.update((m) => ({ ...m, sid: s.sid }));
     this.securityOpen.set(false);
   }
 
@@ -123,13 +150,7 @@ export class OrderComponent {
     this.ordersService.get(id).subscribe({
       next: (o: Order) => {
         this.orderViewModel.order.set(o);
-        this.form.setValue({
-          sid: o.sid,
-          tradeDate: o.tradeDate.substring(0, 10),
-          quantity: o.quantity,
-          managerId: o.managerId,
-          strategyId: o.strategyId,
-        });
+        this.orderObject.set(toModel(o));
         this.securityText.set(o.security?.description ?? '');
         this.allocations.set(this.copyAllocations());   // nesnimljene izmene u gridu se odbacuju
         this.editing.set(false);   // nazad u readonly
@@ -148,16 +169,19 @@ export class OrderComponent {
    * Posle snimanja forma je ponovo readonly, a Book onemogućen do sledećeg Edit-a.
    */
   book() {
-     if (this.saving() || !this.editable() || this.invalid()) return;
+    if (this.saving() || !this.editable() || this.orderForm().invalid()) return;
 
-    const v = this.form.getRawValue();
+    const v = this.orderObject();
     this.saving.set(true);
 
     this.ordersService
       .save({
-        ...v,
         orderId: this.orderViewModel.order()?.orderId ?? 0,
+        sid: v.sid,
         tradeDate: `${v.tradeDate}T00:00:00`,
+        quantity: v.quantity ?? 0,
+        managerId: Number(v.managerId),     // select daje string -> server očekuje broj
+        strategyId: Number(v.strategyId),
         allocations: this.allocations()
           .filter((a) => a.managerId && a.strategyId && a.quantity > 0)     // nepopunjeni redovi se ne šalju
           .map((a) => (a.allocationId < 0 ? { ...a, allocationId: 0 } : a)), // novi red: id dodeljuje server
@@ -180,61 +204,4 @@ export class OrderComponent {
   private copyAllocations(): Allocation[] {
     return structuredClone(this.orderViewModel.order()?.allocations ?? []);
   }
-
-    /** suma quantity svih alokacija */
-allocatedQty = computed(() =>
-  this.allocations().reduce((sum, a) => sum + a.quantity, 0)
-
-);
-
-/** Quantity iz forme kao signal */
-readonly quantity = toSignal(this.form.controls.quantity.valueChanges, {
-  initialValue: this.form.controls.quantity.value,
-});
-
-/** greška u Quantity: mora biti > 0 i, ako ima alokacija, jednak njihovoj sumi */
-readonly qtyMismatch = computed(() => {
-  if (!this.editable()) return false;           // readonly nalog nikad nije crven
-
-  const qty = this.quantity() ?? 0;             // prazno polje daje null
-  if (!(qty > 0)) return true;                  // 0, negativno ili prazno
-
-  return Math.round(this.allocatedQty() * 100) !== Math.round(qty * 100);
-});
-
-/** sid iz forme kao signal (0 = ništa nije izabrano iz liste) */
-readonly sid = toSignal(this.form.controls.sid.valueChanges, {
-  initialValue: this.form.controls.sid.value,
-});
-
-/** greška: u Edit režimu (ili novom nalogu) hartija nije izabrana */
-readonly securityMissing = computed(() => this.editable() && !this.sid());
-
-/** managerId i tradeDate iz forme kao signali */
-readonly managerId = toSignal(this.form.controls.managerId.valueChanges, {
-  initialValue: this.form.controls.managerId.value,
-});
-readonly managerMissing = computed(() => this.editable() && !this.managerId());
-
-readonly tradeDate = toSignal(this.form.controls.tradeDate.valueChanges, {
-  initialValue: this.form.controls.tradeDate.value,
-});
-
-/** greške: manager nije izabran (0), datum je prazan ('') */
-
-readonly tradeDateMissing = computed(() => this.editable() && !this.tradeDate());
-
-/** strategyId iz forme kao signal */
-readonly strategyId = toSignal(this.form.controls.strategyId.valueChanges, {
-  initialValue: this.form.controls.strategyId.value,
-});
-
-/** greška: strategija nije izabrana (0) */
-readonly strategyMissing = computed(() => this.editable() && !this.strategyId());
-
-readonly invalid = computed(() =>
-  this.qtyMismatch() || this.securityMissing() || this.tradeDateMissing() ||
-  this.managerMissing() || this.strategyMissing()
-);
-
 }

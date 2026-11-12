@@ -4,12 +4,12 @@
       <label class="field">
         <span class="label">Sid</span>
         <!-- Sid dodeljuje baza: samo za čitanje -->
-        <input class="control" [value]="sid() ?? ''" placeholder="auto" readonly />
+        <input class="control" [formField]="securityForm.sid" placeholder="auto" />
       </label>
 
       <label class="field">
         <span class="label">Description</span>
-        <input class="control" [(ngModel)]="description" [readonly]="!editable()" [class.Error]="descriptionMissing()" />
+        <input class="control" [formField]="securityForm.description" [class.Error]="descriptionMissing()" />
       </label>
     </div>
 
