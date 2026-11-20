@@ -1,25 +1,20 @@
-import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, computed, inject, signal } from '@angular/core';
 import { SecurityViewModel } from './security.view-model';
 import { injectViewModel } from '../common/window/window.service';
 import { WindowFrameComponent } from '../common/window/window-frame.component';
 import { LookupCache } from '../common/lookup-cache';
 import { Security } from '../common/models';
+import { form, FormField, pattern, readonly } from '@angular/forms/signals';
 
 @Component({
-    selector: 'app-security',
-    imports: [WindowFrameComponent, FormsModule],
-    templateUrl: './security.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
-    styleUrl: './security.component.css'
+  selector: 'app-security',
+  imports: [WindowFrameComponent, FormField],
+  templateUrl: './security.component.html',
+  styleUrl: './security.component.css'
 })
 export class SecurityComponent {
   protected readonly vm = injectViewModel<SecurityViewModel>();
   private readonly lookups = inject(LookupCache);
-
-  /** polja forme; postojeća hartija -> njene vrednosti, nova -> prazno */
-  readonly sid = signal<number | null>(this.vm.security()?.sid ?? null);
-  readonly description = signal(this.vm.security()?.description ?? '');
 
   /** true dok traje snimanje ili učitavanje */
   readonly saving = signal(false);
@@ -33,12 +28,21 @@ export class SecurityComponent {
   /** polja se mogu menjati: nova hartija ili Edit režim; inače readonly */
   readonly editable = computed(() => this.vm.isNew || this.editing());
 
-  /** Save aktivan samo kad se sme menjati, opis je popunjen i ništa ne traje */
-  readonly canSave = computed(
-    () => this.editable() && !this.descriptionMissing() && !this.saving(),
-  );
+  readonly model = signal<{ sid: number | null; description: string }>({
+    sid: this.vm.security()?.sid ?? null,
+    description: this.vm.security()?.description ?? '',
+  });
+  readonly securityForm = form(this.model, (p) => {
+    // /\S/ odbija i prazan string i same razmake, pa poseban required nije potreban
+    pattern(p.description, /\S/, { message: 'Description is required' });
+    readonly(p.description, { when: () => !this.editable() });
+    readonly(p.sid);  // Sid je uvek readonly: dodeljuje ga baza
+  });
 
-  /** Save: nova -> POST, postojeća -> PUT; posle snimanja ponovo učitaj sa servera */
+  /** Save aktivan samo u Edit režimu, kad forma prolazi sva pravila i ništa ne traje */
+  readonly canSave = computed(() => this.editable() && this.securityForm().valid() && !this.saving());
+
+  /** Save: nova -> POST, postojeća -> PUT; server vraća snimljenu hartiju */
   save() {
     if (!this.canSave()) return;
     this.saving.set(true);
@@ -46,14 +50,11 @@ export class SecurityComponent {
 
     this.lookups
       .saveSecurity(
-        { sid: this.sid() ?? 0, description: this.description().trim() },
+        { sid: this.model().sid ?? 0, description: this.model().description.trim() },
         this.vm.isNew,
       )
       .subscribe({
-        next: (saved) => {
-          this.vm.security.set(saved); // od sad postojeća: isNew -> false, naslov -> "Security <sid>"
-          this.refresh();
-        },
+        next: (saved) => this.show(saved), // od sad postojeća: isNew -> false, naslov -> "Security <sid>"
         error: (e) => this.fail(e),
       });
   }
@@ -76,6 +77,15 @@ export class SecurityComponent {
     this.editing.set(true);
   }
 
+  /** Cancel: odbaci izmene lokalno (bez poziva servera) i vrati u readonly */
+  cancel() {
+    const s = this.vm.security();
+    if (!s) return;
+    this.model.set({ sid: s.sid, description: s.description });
+    this.editing.set(false);
+    this.error.set('');
+  }
+
   close() {
     this.vm.close();
   }
@@ -83,18 +93,13 @@ export class SecurityComponent {
   /** upiši hartiju sa servera u formu i vrati je u readonly */
   private show(s: Security) {
     this.vm.security.set(s);
-    this.sid.set(s.sid);
-    this.description.set(s.description);
+    this.model.set({ sid: s.sid, description: s.description });
     this.editing.set(false);
     this.saving.set(false);
   }
 
   private fail(e: { status: number; statusText: string }) {
-    this.error.set(`${e.status} ${e.statusText}`);
+    this.error.set(e.status === 0 ? 'Server nije dostupan' : `${e.status} ${e.statusText}`);
     this.saving.set(false);
   }
-
-  readonly descriptionMissing = computed(
-    () => this.editable() && !this.description().trim(),
-  );
 }

@@ -77,17 +77,18 @@
   color: #ff6b7a;
 }
 
-/* dugmad desno: prazno | Save | Edit | Refresh | Close */
+/* dugmad desno: prazno | Save | Edit | Cancel | Refresh | Close */
 .footer
 {
   grid-row: 3;
   display: grid;
-  grid-template-columns: 1fr auto auto auto auto;
+  grid-template-columns: 1fr auto auto auto auto auto;
   gap: 6px;
   padding: 4px 8px 8px;
 }
 
 .save    { grid-column: 2; }
 .edit    { grid-column: 3; }
-.refresh { grid-column: 4; }
-.close   { grid-column: 5; }
+.cancel  { grid-column: 4; }
+.refresh { grid-column: 5; }
+.close   { grid-column: 6; }
